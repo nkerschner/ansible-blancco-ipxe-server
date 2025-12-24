@@ -112,42 +112,16 @@ goto bootblancco
 
 # Boot the selected ARCH image with the selected booting option
 :bootblancco
-iseq ${product} VirtualBox && goto VirtualBox || #Enable for VirtualBox clients testing.
-kernel http://${server}/Images_Content/${imgfolder}/arch/boot/${architecture}/${vmlinuz}
-initrd http://${server}/Images_Content/${imgfolder}/arch/boot/${architecture}/${archiso}
-initrd http://${server}/Images_Content/${imgfolder}/arch/boot/${intelucode}
-isset ${amducode} && initrd http://${server}/Images_Content/${imgfolder}/arch/boot/${amducode} ||
-initrd http://${server}/Images_Content/${imgfolder}/arch/boot/${config}
-set addinitrd initrd=${archiso} initrd=${config} initrd=${intelucode}
-isset ${amducode} && set addinitrd ${addinitrd} initrd=${amducode} || 
-set ipconfig ip=dhcp BOOTIF=${netX/mac}  #Default for all iPXE.
-#set ipconfig ip=dhcp #for VirtualBox clients test only
-
-echo =======================================================
-echo menu filename: ipxe.menu
-echo Product   : ${manufacturer} ${product} ${serial}
-echo Platform  : ${platform} ${buildarch} 
-echo ${product} IP address: ${ip}, ${ipconfig}, DHCP server: ${dhcp-server}
-echo =======================================================
-sleep 5
- 
-imgargs ${vmlinuz} archisobasedir=arch archiso_http_srv=${server}/Images_Content/${imgfolder}/ ${ipconfig} ${addinitrd} ${bootparams}
-boot || goto failed
-goto start
-
-# In theory, you can use a single BDE vanilla image and create several config.img, each having a different configuration (hardware tests on/off, local/remote erasure, ...)
-
-:VirtualBox
-iseq ${product} VirtualBox && echo VirtualBox clients testing || echo non-VirtualBox clients
-#prompt --key 1 --timeout 10000 Press '1' for Local UI or hit Enter for BMC Live Management... && set config UI_config.img || set config Remote_config.img #Multiple config.img, one image folder
-kernel http://${server}/Images_Content/${imgfolder}/arch/boot/${architecture}/${vmlinuz}
-initrd http://${server}/Images_Content/${imgfolder}/arch/boot/${architecture}/${archiso}
-initrd http://${server}/Images_Content/${imgfolder}/arch/boot/${intelucode}
-isset ${amducode} && initrd http://${server}/Images_Content/${imgfolder}/arch/boot/${amducode} ||
-initrd http://${server}/Images_Content/${imgfolder}/arch/boot/${config}
-set addinitrd initrd=${archiso} initrd=${config} initrd=${intelucode}
-isset ${amducode} && set addinitrd ${addinitrd} initrd=${amducode} || 
-iseq ${platform} efi && set ipconfig ip=dhcp || set ipconfig ip=dhcp BOOTIF=${netX/mac}  #for VirtualBox clients test only
+iseq ${manufacturer} LENOVO && goto bootlenovo ||
+kernel	http://${server}/Images_Content/${imgfolder}/arch/boot/${architecture}/${vmlinuz}
+initrd	http://${server}/Images_Content/${imgfolder}/arch/boot/${architecture}/${archiso}
+initrd	http://${server}/Images_Content/${imgfolder}/arch/boot/${intelucode}
+isset	${amducode} && initrd http://${server}/Images_Content/${imgfolder}/arch/boot/${amducode} ||
+initrd	http://${server}/Images_Content/${imgfolder}/arch/boot/${config}
+set	addinitrd initrd=${archiso} initrd=${config} initrd=${intelucode}
+isset	${amducode} && set addinitrd ${addinitrd} initrd=${amducode} || 
+#set	ipconfig ip=dhcp BOOTIF=${netX/mac}  #Default for all iPXE.
+set	ipconfig ip=dhcp #for VirtualBox clients test only
 
 echo =======================================================
 echo menu filename: ipxe.menu
@@ -156,7 +130,31 @@ echo Platform  : ${platform} ${buildarch}
 echo ${product} IP address: ${ip}, ${ipconfig}, DHCP server: ${dhcp-server}
 echo =======================================================
 sleep 10
+ 
+imgargs ${vmlinuz} archisobasedir=arch archiso_http_srv=${server}/Images_Content/${imgfolder}/ ${ipconfig} ${addinitrd} ${bootparams}
+boot || goto failed
+goto start
 
+:bootlenovo
+kernel  http://${server}/Images_Content/${imgfolder}/arch/boot/${architecture}/${vmlinuz}
+initrd  http://${server}/Images_Content/${imgfolder}/arch/boot/${architecture}/${archiso}
+initrd  http://${server}/Images_Content/${imgfolder}/arch/boot/${intelucode}
+isset   ${amducode} && initrd http://${server}/Images_Content/${imgfolder}/arch/boot/${amducode} ||
+initrd  http://${server}/Images_Content/${imgfolder}/arch/boot/${config}
+set     addinitrd initrd=${archiso} initrd=${config} initrd=${intelucode}
+isset   ${amducode} && set addinitrd ${addinitrd} initrd=${amducode} ||
+set    ipconfig ip=dhcp BOOTIF=${netX/mac}  #Default for all iPXE.
+#set     ipconfig ip=dhcp #for VirtualBox clients test only
+
+echo =======================================================
+echo menu filename: ipxe.menu
+echo Product   : ${manufacturer} ${product} ${serial}
+echo Platform  : ${platform} ${buildarch}
+echo ${product} IP address: ${ip}, ${ipconfig}, DHCP server: ${dhcp-server}
+echo bootlenovo
+echo =======================================================
+sleep 10
+ 
 imgargs ${vmlinuz} archisobasedir=arch archiso_http_srv=${server}/Images_Content/${imgfolder}/ ${ipconfig} ${addinitrd} ${bootparams}
 boot || goto failed
 goto start
