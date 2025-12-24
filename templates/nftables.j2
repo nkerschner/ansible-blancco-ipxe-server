@@ -1,0 +1,35 @@
+flush ruleset
+
+table inet filter {
+  chain input {
+    type filter hook input priority 0;
+    policy accept;
+  }
+
+  chain forward {
+    type filter hook forward priority 0;
+    policy drop;
+
+    ct state established,related accept
+
+    # Allow PXE VLAN -> uplink
+    iifname "{{ PXE_INTERFACE }}" oifname "{{ PRIMARY_INTERFACE }}" accept
+
+    # Allow replies back
+    iifname "{{ PRIMARY_INTERFACE }}" oifname "{{ PXE_INTERFACE }}" ct state established,related accept
+  }
+
+  chain output {
+    type filter hook output priority 0;
+    policy accept;
+  }
+}
+
+table ip nat {
+  chain postrouting {
+    type nat hook postrouting priority 100;
+    policy accept;
+
+    oifname "{{ PRIMARY_INTERFACE }}" masquerade
+  }
+}

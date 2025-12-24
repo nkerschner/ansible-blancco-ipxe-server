@@ -1,0 +1,162 @@
+#!ipxe
+
+set server {{ SERVER_IP }}
+sleep 2
+
+# Images that will be selectable
+:start
+menu Blancco iPXE boot menu
+
+item --gap --
+{% for iso in isos %}
+item --key    {{ iso.folder_name }} {{ iso.menu_description }}
+{% endfor %}
+item shell Go to Shell
+item reboot Reboot
+#item shutdown Shutdown
+item
+item --key x exit
+choose --default {{ default_iso_folder_name }} --timeout 30000 selected || goto cancel
+goto ${selected}
+
+:cancel
+echo You Cancelled the menu dropping you to a shell
+shell
+
+:shell
+echo Type 'exit' to get back to the menu
+shell
+set menu-timeout 0
+goto start
+
+:failed
+echo Booting failed, dropping to shell
+goto shell
+
+:reboot
+reboot
+
+:exit
+exit
+
+:config
+config
+goto start
+
+:back
+set submenu-timeout 0
+clear submenu-default
+goto start
+
+:shutdown
+poweroff
+
+###Menu
+
+# Define the path to the images here
+
+{% for iso in isos %}
+:{{ iso.folder_name }}
+set imgfolder {{ iso.folder_name }}
+set architecture x86_64
+set vmlinuz vmlinuz-bde-linux
+set archiso initramfs-bde-linux.img
+set intelucode intel-ucode.img
+set amducode amd-ucode.img
+set config config.img
+#set config UI_config.img #Single BDE image and create several config.img, each having a different configuration (hardware tests on/off, local/remote erasure, ...)
+set bootparams cow_spacesize=2G libata.allow_tpm=1 memtest=01
+goto params
+{% endfor %}
+
+# Booting options that will be selectable for ARCH images
+:params
+menu Booting options
+
+item --gap --
+item --key a	nat Native Resolution
+item --key b	safe Safe Resolution
+item --key c	flr Freeze Lock Removal
+item --key d	mess Show Startup Messages
+item --key e	cust Customized Startup
+item VirtualBox VirtualBox clients
+item shell Go to Shell
+item reboot Reboot
+item
+item --key x	start < Blancco
+choose --default flr --timeout 10000 selected || goto cancel
+goto ${selected}
+
+# In theory, you can create several customized bootings (cust1, cust2, ...) each using a different set of parameters (flr=forced, flr=disabled, noapic, ...)
+
+# Define the bootable options here for ARCH images
+:nat
+set bootparams ${bootparams} loglevel=0 quiet splash 
+goto bootblancco
+
+:safe
+set bootparams ${bootparams} loglevel=0 quiet splash nomodeset 
+goto bootblancco
+
+:flr
+set bootparams ${bootparams} loglevel=0 flr 
+goto bootblancco
+
+:mess
+set bootparams ${bootparams} loglevel=7 
+goto bootblancco
+
+:cust
+set bootparams ${bootparams} flr=disabled
+goto bootblancco
+
+# Boot the selected ARCH image with the selected booting option
+:bootblancco
+iseq ${product} VirtualBox && goto VirtualBox || #Enable for VirtualBox clients testing.
+kernel http://${server}/Images_Content/${imgfolder}/arch/boot/${architecture}/${vmlinuz}
+initrd http://${server}/Images_Content/${imgfolder}/arch/boot/${architecture}/${archiso}
+initrd http://${server}/Images_Content/${imgfolder}/arch/boot/${intelucode}
+isset ${amducode} && initrd http://${server}/Images_Content/${imgfolder}/arch/boot/${amducode} ||
+initrd http://${server}/Images_Content/${imgfolder}/arch/boot/${config}
+set addinitrd initrd=${archiso} initrd=${config} initrd=${intelucode}
+isset ${amducode} && set addinitrd ${addinitrd} initrd=${amducode} || 
+set ipconfig ip=dhcp BOOTIF=${netX/mac}  #Default for all iPXE.
+#set ipconfig ip=dhcp #for VirtualBox clients test only
+
+echo =======================================================
+echo menu filename: ipxe.menu
+echo Product   : ${manufacturer} ${product} ${serial}
+echo Platform  : ${platform} ${buildarch} 
+echo ${product} IP address: ${ip}, ${ipconfig}, DHCP server: ${dhcp-server}
+echo =======================================================
+sleep 5
+ 
+imgargs ${vmlinuz} archisobasedir=arch archiso_http_srv=${server}/Images_Content/${imgfolder}/ ${ipconfig} ${addinitrd} ${bootparams}
+boot || goto failed
+goto start
+
+# In theory, you can use a single BDE vanilla image and create several config.img, each having a different configuration (hardware tests on/off, local/remote erasure, ...)
+
+:VirtualBox
+iseq ${product} VirtualBox && echo VirtualBox clients testing || echo non-VirtualBox clients
+#prompt --key 1 --timeout 10000 Press '1' for Local UI or hit Enter for BMC Live Management... && set config UI_config.img || set config Remote_config.img #Multiple config.img, one image folder
+kernel http://${server}/Images_Content/${imgfolder}/arch/boot/${architecture}/${vmlinuz}
+initrd http://${server}/Images_Content/${imgfolder}/arch/boot/${architecture}/${archiso}
+initrd http://${server}/Images_Content/${imgfolder}/arch/boot/${intelucode}
+isset ${amducode} && initrd http://${server}/Images_Content/${imgfolder}/arch/boot/${amducode} ||
+initrd http://${server}/Images_Content/${imgfolder}/arch/boot/${config}
+set addinitrd initrd=${archiso} initrd=${config} initrd=${intelucode}
+isset ${amducode} && set addinitrd ${addinitrd} initrd=${amducode} || 
+iseq ${platform} efi && set ipconfig ip=dhcp || set ipconfig ip=dhcp BOOTIF=${netX/mac}  #for VirtualBox clients test only
+
+echo =======================================================
+echo menu filename: ipxe.menu
+echo Product   : ${manufacturer} ${product} ${serial}
+echo Platform  : ${platform} ${buildarch} 
+echo ${product} IP address: ${ip}, ${ipconfig}, DHCP server: ${dhcp-server}
+echo =======================================================
+sleep 10
+
+imgargs ${vmlinuz} archisobasedir=arch archiso_http_srv=${server}/Images_Content/${imgfolder}/ ${ipconfig} ${addinitrd} ${bootparams}
+boot || goto failed
+goto start

@@ -1,0 +1,35 @@
+---
+# DHCP configuration
+PRIMARY_INTERFACE: ens18 #Primary interface on a VLAN and subnet with DHCP and an internet connection
+PXE_INTERFACE: ens19 #Secondary interface on a VLAN and subnet with no DHCP or internet connection
+SUBNET: 10.230.0.0
+NETMASK: 255.255.255.0
+DNS_SERVER: 1.1.1.1
+
+SERVER_IP: 10.230.0.1
+DHCP_RANGE_START: 10.230.0.6
+DHCP_RANGE_END: 10.230.0.254
+
+#Root Directories
+TFTP_ROOT: /srv/tftp/
+WEB_ROOT: /var/www/html/
+IMAGES_CONTENT: "{{ WEB_ROOT }}Images_Content"
+ISO_IMAGES: "{{ WEB_ROOT }}ISO_Images"
+
+#ISO info
+default_iso_folder_name: bde_7-17-1_x64 #default iso for ipxe menu
+isos:
+  - folder_name: bde_7-17-1_x64
+    file_name: bde-7171-computer.iso
+    menu_description: Drive Eraser 7.17.1 64-bit
+    enabled: true
+
+  - folder_name: bde_7-17-0_x64
+    file_name: ob_Blancco717.iso
+    menu_description: Drive Eraser 7.17.0 64-bit
+    enabled: true
+
+  - folder_name: bde_7-16-0_x64
+    file_name: bde-volume-7.16.0.iso
+    menu_description: Drive Eraser 7.16.0 64-bit
+    enabled: true

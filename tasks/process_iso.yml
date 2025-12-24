@@ -1,0 +1,34 @@
+---
+- name: Create folder for ISO Content
+  ansible.builtin.file:
+    path: "{{ IMAGES_CONTENT }}/{{ iso.folder_name }}"
+    state: directory
+    
+- name: Copy ISO to ISO_Images
+  ansible.builtin.copy:
+    src: ./ISO/{{ iso.file_name }}
+    dest: "{{ ISO_IMAGES }}/"
+  register: copy_ISO_result
+    
+- name: Mount ISO
+  ansible.posix.mount:
+    path: /media/ISO
+    src: "{{ ISO_IMAGES }}/{{ iso.file_name  }}"
+    fstype: iso9660
+    opts: "loop"
+    state: ephemeral
+  when: copy_ISO_result.changed
+  register: mount_ISO_result
+    
+- name: Copy ISO files
+  ansible.builtin.command: >
+    rsync -a --itemize-changes /media/ISO/ "{{ IMAGES_CONTENT }}/{{ iso.folder_name }}/"
+  when: mount_ISO_result.changed
+  register: rsync_result
+  changed_when: rsync_result.stdout != ""
+
+- name: Unmount ISO
+  ansible.posix.mount:
+    path: /media/ISO
+    state: unmounted
+  when: mount_ISO_result.changed

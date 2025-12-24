@@ -1,0 +1,97 @@
+---
+- name: Setup and run PXE boot server
+  hosts: pxeserver
+  become: true
+  vars_files:
+    - vars.yml
+
+  handlers:
+#    - name: Restart network interface
+#      ansible.builtin.shell: |
+#        "ifdown {{ PXE_INTERFACE }}"
+#        "ifup {{ PXE_INTERFACE }}"
+#      changed_when: true
+
+    - name: Restart TFTP
+      ansible.builtin.service:
+        name: tftpd-hpa
+        state: restarted
+
+    - name: Restart DHCP
+      ansible.builtin.service:
+        name: isc-dhcp-server
+        state: restarted
+
+    - name: Restart nftables
+      ansible.builtin.service:
+        name: nftables
+        state: restarted
+
+  tasks:
+    - name: Update apt cache
+      ansible.builtin.apt:
+        update_cache: true
+        cache_valid_time: 3600
+       
+    - name: Disable secondary network interface
+      ansible.builtin.command: "ifdown {{ PXE_INTERFACE }}"
+
+    - name: Remove secondary network interface configuration file
+      ansible.builtin.file:
+        path: /etc/network/interfaces.d/{{ PXE_INTERFACE }}.cfg
+        state: absent
+    
+    - name: Remove pxe files from TFTP directory
+      ansible.builtin.file:
+        path: "{{ TFTP_ROOT }}/"
+        state: absent
+
+    - name: Remove DHCP interface configuration
+      ansible.builtin.file:
+        path: /etc/default/isc-dhcp-server
+        state: absent
+
+    
+    - name: Remove DHCP server configuration
+      ansible.builtin.file:
+        path: /etc/dhcp/dhcpd.conf
+        state: absent
+
+    - name: Remove image content directory
+      ansible.builtin.file:
+        path: "{{ IMAGES_CONTENT }}"
+        state: absent
+
+    - name: Remove ISO directory
+      ansible.builtin.file:
+        path: "{{ ISO_IMAGES }}"
+        state: absent
+
+    - name: Remove ISO mount directory
+      ansible.builtin.file:
+        path: /media/ISO
+        state: absent
+
+    - name: Remove iPXE menu
+      ansible.builtin.file:
+        path: "{{ WEB_ROOT }}/ipxe.menu"
+        state: absent
+
+    - name: Disable IP passthrough
+      ansible.posix.sysctl:
+        name: net.ipv4.ip_forward
+        value: '0'
+        sysctl_set: true
+        state: present
+        reload: true
+    
+    - name: Uninstall installed packages
+      ansible.builtin.apt:
+        name:
+          - isc-dhcp-server
+          - tftpd-hpa
+          - apache2
+          - unzip
+          - nftables
+          - rsync
+        state: absent

@@ -1,0 +1,182 @@
+---
+- name: Setup and run PXE boot server
+  hosts: pxeserver
+  become: true
+  vars_files:
+    - vars.yml
+
+  handlers:
+#    - name: Restart network interface
+#      ansible.builtin.shell: |
+#        "ifdown {{ PXE_INTERFACE }}"
+#        "ifup {{ PXE_INTERFACE }}"
+#      changed_when: true
+
+    - name: Restart TFTP
+      ansible.builtin.service:
+        name: tftpd-hpa
+        state: restarted
+
+    - name: Restart DHCP
+      ansible.builtin.service:
+        name: isc-dhcp-server
+        state: restarted
+
+    - name: Restart nftables
+      ansible.builtin.service:
+        name: nftables
+        state: restarted
+
+  tasks:
+    - name: Update apt cache
+      ansible.builtin.apt:
+        update_cache: true
+        cache_valid_time: 3600
+
+    - name: Install required packages
+      ansible.builtin.apt:
+        name:
+          - isc-dhcp-server
+          - tftpd-hpa
+          - apache2
+          - nano
+          - unzip
+          - net-tools
+          - nftables
+          - rsync
+        state: latest
+    
+    - name: Configure secondary network interface using a template file
+      ansible.builtin.template:
+        src: ./templates/pxe-iface.j2
+        dest: /etc/network/interfaces.d/{{ PXE_INTERFACE }}.cfg
+        owner: root
+        group: root
+        mode: '0644'
+      register: secondary_iface_result
+      notify:
+      #  - Restart network interface
+        - Restart TFTP
+      
+    - name: Enable secondary network interface
+      ansible.builtin.command: "ifup {{ PXE_INTERFACE }}"
+      when: secondary_iface_result.changed
+
+    - name: Make sure TFTP directory exists
+      ansible.builtin.file:
+        path: "{{ TFTP_ROOT }}"
+        state: directory
+        mode: '0755'
+    
+    - name: Configure TFTP to use set root directory
+      ansible.builtin.template:
+        src: ./templates/tftp-hpa.j2
+        dest: /etc/default/tftpd-hpa
+        owner: root
+        group: root
+        mode: '0755'
+      notify:
+        - Restart TFTP
+    
+    - name: Move pxe files to TFTP directory
+      ansible.builtin.copy:
+        src: ./Boot/
+        dest: "{{ TFTP_ROOT }}"
+        mode: '0755'
+
+    - name: Configure DHCP interface
+      ansible.builtin.template:
+        src: ./templates/default-isc-dhcp-server.j2
+        dest: /etc/default/isc-dhcp-server
+        owner: root
+        group: root
+        mode: '0644'
+      notify:
+        - Restart DHCP
+    
+    - name: Configure DHCP server
+      ansible.builtin.template:
+        src: ./templates/dhcpd.j2
+        dest: /etc/dhcp/dhcpd.conf
+        owner: root
+        group: root
+        mode: '0644'
+      notify:
+        - Restart DHCP
+
+    - name: Create image content directory
+      ansible.builtin.file:
+        path: "{{ IMAGES_CONTENT }}"
+        state: directory
+        mode: '0755'
+    
+    - name: Create ISO directory
+      ansible.builtin.file:
+        path: "{{ ISO_IMAGES }}"
+        state: directory
+        mode: '0755'
+    
+    - name: Create ISO mount directory
+      ansible.builtin.file:
+        path: /media/ISO
+        state: directory
+        mode: '0755'
+
+    # loop to process ISOs
+    - name: Process ISOs
+      ansible.builtin.include_tasks: ./tasks/process_iso.yml
+      loop: "{{ isos }}"
+      loop_control:
+        loop_var: iso
+        label: "{{ iso.folder_name }}"
+      when: iso.enabled | default(true) | bool
+
+    - name: iPXE menu
+      ansible.builtin.template:
+        src: ./templates/ipxe.menu.j2
+        dest: "{{ WEB_ROOT }}/ipxe.menu"
+        owner: root
+        group: root
+        mode: '0644'
+
+    - name: Enable IP passthrough
+      ansible.posix.sysctl:
+        name: net.ipv4.ip_forward
+        value: '1'
+        sysctl_set: true
+        state: present
+        reload: true
+    
+    - name: write ipv4 rules into rules.v4
+      ansible.builtin.template:
+        src: ./templates/nftables.j2
+        dest: /etc/nftables.conf
+        owner: root
+        group: root
+        mode: '0644'
+      notify: Restart nftables
+    
+    - name: enable TFTP
+      ansible.builtin.systemd_service:
+        name: tftpd-hpa
+        enabled: true
+        state: started
+    
+    - name: enable isc-dhcp-server
+      ansible.builtin.systemd_service:
+        name: isc-dhcp-server
+        enabled: true
+        state: started
+    
+    - name: enable apache2
+      ansible.builtin.systemd_service:
+        name: apache2
+        enabled: true
+        state: started
+
+    - name: enable nftables
+      ansible.builtin.service:
+        name: nftables
+        enabled: true
+        state: started
+    

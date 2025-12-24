@@ -1,0 +1,49 @@
+# Global option declarations
+option dhcp-client-architecture code 93 = unsigned integer 16;
+option space ipxe;
+option ipxe-encap-opts code 175 = encapsulate ipxe;
+option ipxe.priority code 1 = signed integer 8;
+
+default-lease-time 3600;
+max-lease-time 86400;
+authoritative;
+
+option domain-name "pxe.local";
+option domain-name-servers {{ DNS_SERVER }};
+
+# Subnet declarations
+subnet {{ SUBNET }} netmask {{ NETMASK }} {
+  range {{ DHCP_RANGE_START }} {{ DHCP_RANGE_END }};
+  option routers {{ SERVER_IP }};
+  option subnet-mask {{ NETMASK }};
+  next-server {{ SERVER_IP }};
+
+  # PXE boot logic:
+  
+  # Match non-UEFI BIOS clients (no Arch field)
+  if substring(option vendor-class-identifier, 0, 9) = "PXEClient" {
+    filename "undionly.kpxe";
+  }
+
+  # Match iPXE clients using Vendor Class Identifier
+  if substring(option vendor-class-identifier, 0, 4) = "iPXE" {
+    filename "{{ SERVER_IP }}/ipxe.menu";
+  }
+
+  # UEFI 32-bit clients
+  if substring(option vendor-class-identifier, 15, 5) = "00006" {
+    filename "snponly_32bit.efi";
+  }
+
+  # UEFI 64-bit clients
+  if substring(option vendor-class-identifier, 15, 5) = "00007" {
+    filename "snponly_64bit.efi";
+  }
+
+  # UEFI HTTP clients (e.g. Macs)
+  if substring(option vendor-class-identifier, 15, 5) = "00009" {
+    filename "snponly_64bit.efi";
+  }
+
+
+}

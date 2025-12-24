@@ -1,0 +1,5 @@
+# The pxe network interface
+allow-hotplug {{ PXE_INTERFACE }}
+iface {{ PXE_INTERFACE }} inet static
+	address {{  SERVER_IP  }}
+	netmask {{ NETMASK }}
