@@ -9,7 +9,7 @@ menu Blancco iPXE boot menu
 
 item --gap --
 {% for iso in isos %}
-item --key    {{ iso.folder_name }} {{ iso.menu_description }}
+item {{ iso.folder_name }} {{ iso.menu_description }}
 {% endfor %}
 item shell Go to Shell
 item reboot Reboot
