@@ -79,7 +79,6 @@ item --key b	safe Safe Resolution
 item --key c	flr Freeze Lock Removal
 item --key d	mess Show Startup Messages
 item --key e	cust Customized Startup
-item VirtualBox VirtualBox clients
 item shell Go to Shell
 item reboot Reboot
 item
@@ -120,8 +119,7 @@ isset	${amducode} && initrd http://${server}/Images_Content/${imgfolder}/arch/bo
 initrd	http://${server}/Images_Content/${imgfolder}/arch/boot/${config}
 set	addinitrd initrd=${archiso} initrd=${config} initrd=${intelucode}
 isset	${amducode} && set addinitrd ${addinitrd} initrd=${amducode} || 
-#set	ipconfig ip=dhcp BOOTIF=${netX/mac}  #Default for all iPXE.
-set	ipconfig ip=dhcp #for VirtualBox clients test only
+set	ipconfig ip=dhcp
 
 echo =======================================================
 echo menu filename: ipxe.menu
@@ -143,8 +141,7 @@ isset   ${amducode} && initrd http://${server}/Images_Content/${imgfolder}/arch/
 initrd  http://${server}/Images_Content/${imgfolder}/arch/boot/${config}
 set     addinitrd initrd=${archiso} initrd=${config} initrd=${intelucode}
 isset   ${amducode} && set addinitrd ${addinitrd} initrd=${amducode} ||
-set    ipconfig ip=dhcp BOOTIF=${netX/mac}  #Default for all iPXE.
-#set     ipconfig ip=dhcp #for VirtualBox clients test only
+set    ipconfig ip=dhcp BOOTIF=${netX/mac}
 
 echo =======================================================
 echo menu filename: ipxe.menu
