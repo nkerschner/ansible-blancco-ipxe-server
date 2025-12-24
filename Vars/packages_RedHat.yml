@@ -1,0 +1,8 @@
+DHCPD: dhcpd
+TFTPD: tftpd-server
+APACHE: httpd
+NANO: nano
+UNZIP: unzip
+NET_TOOLS: net-tools
+NFTABLES: nftables
+RSYNC: rsync

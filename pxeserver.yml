@@ -3,7 +3,7 @@
   hosts: pxeserver
   become: true
   vars_files:
-    - vars.yml
+    - ./Vars/vars.yml
 
   handlers:
 #    - name: Restart network interface
@@ -14,18 +14,25 @@
 
     - name: Restart TFTP
       ansible.builtin.service:
-        name: tftpd-hpa
+        name: "{{ TFTPD }}"
         state: restarted
 
     - name: Restart DHCP
       ansible.builtin.service:
-        name: isc-dhcp-server
+        name: "{{ DHCPD }}"
         state: restarted
 
     - name: Restart nftables
       ansible.builtin.service:
-        name: nftables
+        name: "{{ NFTABLES }}"
         state: restarted
+  
+  pre_tasks:
+    - name: Load package variables (dynamically)
+      include_vars: "{{ item }}"
+      with_first_found:
+        - "Vars/packages_{{ ansible_os_family }}.yml"
+        - "Vars/packages_default.yml"
 
   tasks:
     - name: Update apt cache
@@ -36,13 +43,13 @@
     - name: Install required packages
       ansible.builtin.apt:
         name:
-          - isc-dhcp-server
-          - tftpd-hpa
-          - apache2
-          - nano
-          - unzip
-          - net-tools
-          - nftables
+          - "{{ DHCPD }}"
+          - "{{ TFTPD }}"
+          - "{{ APACHE }}"
+          - "{{ NANO }}"
+          - "{{ UNZIP }}"
+          - "{{ NET_TOOLS }}"
+          - "{{ NFTABLES }}"
           - rsync
         state: latest
     
@@ -71,7 +78,7 @@
     - name: Configure TFTP to use set root directory
       ansible.builtin.template:
         src: ./templates/tftp-hpa.j2
-        dest: /etc/default/tftpd-hpa
+        dest: "/etc/default/{{ TFTPD }}"
         owner: root
         group: root
         mode: '0755'
@@ -87,7 +94,7 @@
     - name: Configure DHCP interface
       ansible.builtin.template:
         src: ./templates/default-isc-dhcp-server.j2
-        dest: /etc/default/isc-dhcp-server
+        dest: "/etc/default/{{ DHCPD }}"
         owner: root
         group: root
         mode: '0644'
@@ -158,25 +165,25 @@
     
     - name: enable TFTP
       ansible.builtin.systemd_service:
-        name: tftpd-hpa
+        name: "{{ TFTPD }}"
         enabled: true
         state: started
     
     - name: enable isc-dhcp-server
       ansible.builtin.systemd_service:
-        name: isc-dhcp-server
+        name: "{{ DHCPD }}"
         enabled: true
         state: started
     
     - name: enable apache2
       ansible.builtin.systemd_service:
-        name: apache2
+        name: "{{ APACHE }}"
         enabled: true
         state: started
 
     - name: enable nftables
       ansible.builtin.service:
-        name: nftables
+        name: "{{ NFTABLES }}"
         enabled: true
         state: started
     

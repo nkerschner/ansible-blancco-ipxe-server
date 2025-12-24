@@ -1,0 +1,8 @@
+DHCPD: isc-dhcp-server
+TFTPD: tftpd-hpa
+APACHE: apache2
+NANO: nano
+UNZIP: unzip
+NET_TOOLS: net-tools
+NFTABLES: nftables
+RSYNC: rsync
