@@ -62,7 +62,7 @@
         mode: '0644'
       register: secondary_iface_result
       notify:
-      #  - Restart network interface
+        - Restart network interface
         - Restart TFTP
       
     - name: Enable secondary network interface
