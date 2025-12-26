@@ -7,10 +7,9 @@
 
   handlers:
     - name: Restart network interface
-      ansible.builtin.shell: |
-        "ifdown {{ PXE_INTERFACE }}"
-        "ifup {{ PXE_INTERFACE }}"
-      changed_when: true
+      ansible.builtin.service:
+        name: networking
+        state: restarted
 
     - name: Restart TFTP
       ansible.builtin.service:
