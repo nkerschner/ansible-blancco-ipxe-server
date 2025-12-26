@@ -29,7 +29,7 @@
   
   pre_tasks:
     - name: Load package variables (dynamically)
-      include_vars: "{{ item }}"
+      : "{{ item }}"include_vars
       with_first_found:
         - "Vars/packages_{{ ansible_os_family }}.yml"
         - "Vars/packages_default.yml"
