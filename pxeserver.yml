@@ -78,7 +78,7 @@
       ansible.builtin.lineinfile:
         path: "/etc/default/{{ TFTPD }}"
         regexp: "TFTP_DIRECTORY="
-        line: "TFTP_DIRECTORY={{ TFTP_ROOT }}"
+        line: 'TFTP_DIRECTORY="{{ TFTP_ROOT }}"'
         state: present
       notify:
         - Restart TFTP
@@ -99,7 +99,7 @@
         - regexp: "DHCPDv4_CONF="
           line: "DHCPDv4_CONF=/etc/dhcp/dhcpd.conf"
         - regexp: "INTERFACESv4="
-          line: "INTERFACESv4={{ PXE_INTERFACE }}"
+          line: 'INTERFACESv4="{{ PXE_INTERFACE }}"'
       notify:
         - Restart DHCP
     
