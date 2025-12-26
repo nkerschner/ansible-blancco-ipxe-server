@@ -3,7 +3,7 @@
   hosts: pxeserver
   become: true
   vars_files:
-    - vars.yml
+    - ./Vars/vars.yml
 
   handlers:
 #    - name: Restart network interface
