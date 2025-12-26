@@ -91,12 +91,16 @@
         mode: '0755'
 
     - name: Configure DHCP interface
-      ansible.builtin.template:
-        src: ./templates/default-isc-dhcp-server.j2
+      ansible.builtin.lineinfile:
         dest: "/etc/default/{{ DHCPD }}"
-        owner: root
-        group: root
-        mode: '0644'
+        regexp: "{{ item.regexp }}"
+        line: "{{item.line}}"
+        state: present
+      with_items:
+        - regexp: "DHCPDv4_CONF="
+          line: "DHCPDv4_CONF=/etc/dhcp/dhcpd.conf"
+        - regexp: "INTERFACESv4="
+          line: "INTERFACESv4={{ PXE_INTERFACE }}"
       notify:
         - Restart DHCP
     
