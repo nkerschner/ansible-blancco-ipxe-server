@@ -29,7 +29,7 @@
   
   pre_tasks:
     - name: Load package variables (dynamically)
-      : "{{ item }}"include_vars
+      include_vars: "{{ item }}"
       with_first_found:
         - "Vars/packages_{{ ansible_os_family }}.yml"
         - "Vars/packages_default.yml"
@@ -50,7 +50,7 @@
           - "{{ UNZIP }}"
           - "{{ NET_TOOLS }}"
           - "{{ NFTABLES }}"
-          - rsync
+          - "{{ RSYNC }}"
         state: latest
     
     - name: Configure secondary network interface using a template file
