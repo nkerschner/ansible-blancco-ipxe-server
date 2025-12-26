@@ -21,7 +21,7 @@
   register: mount_ISO_result
     
 - name: Copy ISO files
-  ansible.posix.copy:
+  ansible.builtin.copy:
     src: /media/ISO/
     dest: "{{ IMAGES_CONTENT }}/{{ iso.folder_name }}/"
     remote_src: true
