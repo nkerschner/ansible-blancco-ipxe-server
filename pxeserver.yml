@@ -75,12 +75,11 @@
         mode: '0755'
     
     - name: Configure TFTP to use set root directory
-      ansible.builtin.template:
-        src: ./templates/tftp-hpa.j2
-        dest: "/etc/default/{{ TFTPD }}"
-        owner: root
-        group: root
-        mode: '0755'
+      ansible.builtin.lineinfile:
+        path: "/etc/default/{{ TFTPD }}"
+        regexp: "TFTP_DIRECTORY="
+        line: "TFTP_DIRECTORY={{ TFTP_ROOT }}"
+        state: present
       notify:
         - Restart TFTP
     
@@ -92,7 +91,7 @@
 
     - name: Configure DHCP interface
       ansible.builtin.lineinfile:
-        dest: "/etc/default/{{ DHCPD }}"
+        path: "/etc/default/{{ DHCPD }}"
         regexp: "{{ item.regexp }}"
         line: "{{item.line}}"
         state: present
