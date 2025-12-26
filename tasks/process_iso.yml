@@ -21,11 +21,19 @@
   register: mount_ISO_result
     
 - name: Copy ISO files
-  ansible.builtin.command: >
-    rsync -a --itemize-changes /media/ISO/ "{{ IMAGES_CONTENT }}/{{ iso.folder_name }}/"
+  ansible.posix.copy:
+    src: /media/ISO/
+    dest: "{{ IMAGES_CONTENT }}/{{ iso.folder_name }}/"
+    remote_src: true
+    owner: root
+    group: root
+    mode: '0755'
   when: mount_ISO_result.changed
-  register: rsync_result
-  changed_when: rsync_result.stdout != ""
+#  ansible.builtin.command: >
+#    rsync -a --itemize-changes /media/ISO/ "{{ IMAGES_CONTENT }}/{{ iso.folder_name }}/"
+#  when: mount_ISO_result.changed
+#  register: rsync_result
+#  changed_when: rsync_result.stdout != ""
 
 - name: Unmount ISO
   ansible.posix.mount:

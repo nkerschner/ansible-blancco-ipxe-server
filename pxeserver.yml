@@ -52,13 +52,14 @@
           - "{{ RSYNC }}"
         state: latest
     
-    - name: Configure secondary network interface using a template file
+    - name: Configure secondary network interface using a template file (Debian)
       ansible.builtin.template:
         src: ./templates/pxe-iface.j2
         dest: /etc/network/interfaces.d/{{ PXE_INTERFACE }}.cfg
         owner: root
         group: root
         mode: '0644'
+      when: ansible_os_family == 'Debian'
       register: secondary_iface_result
       notify:
         - Restart network interface
@@ -189,3 +190,10 @@
         enabled: true
         state: started
     
+    - name: Allow http service through firewalld
+      ansible.posix.firewalld:
+        service: http
+        state: enabled
+        permanent: true
+        immediate: true
+      when: ansible_os_family == 'RedHat'

@@ -10,9 +10,7 @@ SERVER_IP: 10.230.0.1
 DHCP_RANGE_START: 10.230.0.6
 DHCP_RANGE_END: 10.230.0.254
 
-#Root Directories
-TFTP_ROOT: /srv/tftp/
-WEB_ROOT: /var/www/html/
+#ISO Related Directories
 IMAGES_CONTENT: "{{ WEB_ROOT }}Images_Content"
 ISO_IMAGES: "{{ WEB_ROOT }}ISO_Images"
 
