@@ -3,8 +3,8 @@ option dhcp-client-architecture code 93 = unsigned integer 16;
 option space ipxe;
 option ipxe-encap-opts code 175 = encapsulate ipxe;
 option ipxe.priority code 1 = signed integer 8;
-option space BSDP; #optional
-option BSDP.server_identifier code 68 = unsigned integer 32; #optional
+option space BSDP;
+option BSDP.server_identifier code 68 = unsigned integer 32;
 option BSDP.server_identifier {{ SERVER_IP | ansible.utils.ip4_hex | int(base=16) }};
 
 default-lease-time 3600;
