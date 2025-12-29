@@ -193,6 +193,7 @@
         name: "{{ NFTABLES }}"
         enabled: true
         state: started
+      when: USE_PXE_INTERFACE
     
     - name: Allow http service through firewalld
       ansible.posix.firewalld:
