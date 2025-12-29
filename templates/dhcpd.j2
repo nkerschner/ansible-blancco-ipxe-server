@@ -14,7 +14,7 @@ option domain-name-servers {{ DNS_SERVER }};
 # Subnet declarations
 subnet {{ SUBNET }} netmask {{ NETMASK }} {
   range {{ DHCP_RANGE_START }} {{ DHCP_RANGE_END }};
-  option routers {{ SERVER_IP }};
+  option routers {{ GATEWAY_IP }};
   option subnet-mask {{ NETMASK }};
   next-server {{ SERVER_IP }};
 
