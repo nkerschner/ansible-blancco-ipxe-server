@@ -9,7 +9,7 @@ NETMASK: 255.255.255.0
 DNS_SERVER: 1.1.1.1
 
 SERVER_IP: 10.250.0.1   #IP for the dhcp, tftp, and web server, assigned to the pxe interface if used, otherwise assigned to the primary interface
-GATEWAY_IP: "{{ SUBNET | ansible.netcommon.ipmath(1) }}"   #IP of the gateway. if pxe interface is used, it will be the same as the server IP. if only using primary interface, it will be the IP of your router
+GATEWAY_IP: "{{ SUBNET | ansible.utils.ipmath(1) }}"   #IP of the gateway. if pxe interface is used, it will be the same as the server IP. if only using primary interface, it will be the IP of your router
 DHCP_RANGE_START: 10.250.0.6
 DHCP_RANGE_END: 10.250.0.254
 
