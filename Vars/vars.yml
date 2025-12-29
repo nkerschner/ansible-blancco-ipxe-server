@@ -10,8 +10,8 @@ DNS_SERVER: 1.1.1.1
 
 SERVER_IP: 10.250.0.1   #IP for the dhcp, tftp, and web server, assigned to the pxe interface if used, otherwise assigned to the primary interface
 GATEWAY_IP: "{{ SUBNET | ansible.utils.ipmath(1) }}"   #IP of the gateway. if pxe interface is used, it will be the same as the server IP. if only using primary interface, it will be the IP of your router
-DHCP_RANGE_START: "{{ SUBNET | ansible.utils.ipmath(5) }}"
-DHCP_RANGE_END: "{{ (((SUBNET + '/' + NETMASK) | ansible.utils.ipaddr('net')) | ansible.utils.usable_range)['usable_ips'][-3] }}"
+DHCP_RANGE_START: "{{ SUBNET | ansible.utils.ipmath(5) }}" #start of DHCP range, set as the 5th ip in the subnet 
+DHCP_RANGE_END: "{{ (((SUBNET + '/' + NETMASK) | ansible.utils.ipaddr('net')) | ansible.utils.usable_range)['usable_ips'][-3] }}"   #End of DHCP range, set as 2nd to last usable IP (ex: 10.250.0.253) in the subnet, leaving one useable IP at the end before the broadcast IP
 
 #ISO Related Directories
 IMAGES_CONTENT: "{{ WEB_ROOT }}Images_Content"
