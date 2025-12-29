@@ -27,6 +27,13 @@
         name: nftables
         state: restarted
 
+  pre_tasks:
+    - name: Load package variables (dynamically)
+      include_vars: "{{ item }}"
+      with_first_found:
+        - "Vars/packages_{{ ansible_facts['os_family'] }}.yml"
+        - "Vars/packages_default.yml"
+  
   tasks:
     - name: Update apt cache
       ansible.builtin.apt:
