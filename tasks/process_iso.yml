@@ -30,11 +30,6 @@
     group: root
     mode: '0755'
   when: mount_ISO_result.changed
-#  ansible.builtin.command: >
-#    rsync -a --itemize-changes /media/ISO/ "{{ IMAGES_CONTENT }}/{{ iso.folder_name }}/"
-#  when: mount_ISO_result.changed
-#  register: rsync_result
-#  changed_when: rsync_result.stdout != ""
 
 - name: Unmount ISO
   ansible.posix.mount:
