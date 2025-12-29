@@ -3,6 +3,7 @@
   ansible.builtin.file:
     path: "{{ IMAGES_CONTENT }}/{{ iso.folder_name }}"
     state: directory
+  register: content_folder_result
     
 - name: Copy ISO to ISO_Images
   ansible.builtin.copy:
@@ -17,7 +18,7 @@
     fstype: iso9660
     opts: "loop"
     state: ephemeral
-  when: copy_ISO_result.changed
+  when: content_folder_result.changed
   register: mount_ISO_result
     
 - name: Copy ISO files
