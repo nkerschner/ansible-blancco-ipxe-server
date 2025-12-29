@@ -28,7 +28,7 @@
     remote_src: true
     owner: root
     group: root
-    mode: '0755'
+    mode: '0644'
   when: mount_ISO_result.changed
 #  ansible.builtin.command: >
 #    rsync -a --itemize-changes /media/ISO/ "{{ IMAGES_CONTENT }}/{{ iso.folder_name }}/"
