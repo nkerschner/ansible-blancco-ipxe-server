@@ -22,7 +22,7 @@
     
 - name: Copy ISO files
   ansible.builtin.copy:
-    src: /media/ISO
+    src: /media/ISO/*
     dest: "{{ IMAGES_CONTENT }}/{{ iso.folder_name }}/"
     remote_src: true
     owner: root
