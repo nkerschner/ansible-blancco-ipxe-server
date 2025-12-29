@@ -5,21 +5,21 @@ option ipxe-encap-opts code 175 = encapsulate ipxe;
 option ipxe.priority code 1 = signed integer 8;
 option space BSDP; #optional
 option BSDP.server_identifier code 68 = unsigned integer 32; #optional
-"option BSDP.server_identifier {{ SERVER_IP | ansible.utils.ip4_hex | int(base=16) }}";
+option BSDP.server_identifier {{ SERVER_IP | ansible.utils.ip4_hex | int(base=16) }};
 
 default-lease-time 3600;
 max-lease-time 86400;
 authoritative;
 
 option domain-name "pxe.local";
-"option domain-name-servers {{ DNS_SERVER }};"
+option domain-name-servers {{ DNS_SERVER }};
 
 # Subnet declarations
-"subnet {{ SUBNET }} netmask {{ NETMASK }} {"
-  "range {{ DHCP_RANGE_START }} {{ DHCP_RANGE_END }};"
-  "option routers {{ GATEWAY_IP }};"
-  "option subnet-mask {{ NETMASK }};"
-  "next-server {{ SERVER_IP }};"
+subnet {{ SUBNET }} netmask {{ NETMASK }} {
+  range {{ DHCP_RANGE_START }} {{ DHCP_RANGE_END }};
+  option routers {{ GATEWAY_IP }};
+  option subnet-mask {{ NETMASK }};
+  next-server {{ SERVER_IP }};
 
   # PXE boot logic:
   
@@ -30,7 +30,7 @@ option domain-name "pxe.local";
 
   # Match iPXE clients using Vendor Class Identifier
   if substring(option vendor-class-identifier, 0, 4) = "iPXE" {
-    "filename "{{ SERVER_IP }}/ipxe.menu";"
+    filename "{{ SERVER_IP }}/ipxe.menu";
   }
 
   # UEFI 32-bit clients
@@ -61,7 +61,7 @@ option domain-name "pxe.local";
             # BSDP Select
             option vendor-encapsulated-options 01:01:02:08:04:81:00:05:2a:82:0a:4e:65:74:42:6f:6f:74:30:30:31;
             filename "snponly_64bit.efi";
-            "next-server {{ SERVER_IP }};"
+            next-server {{ SERVER_IP }};
         }
     }
   }
