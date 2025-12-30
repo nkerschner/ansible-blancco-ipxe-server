@@ -54,8 +54,7 @@ poweroff
 ###Menu
 
 # Define the path to the images here
-
-{% for iso in isos %}
+{% for iso in isos if iso.enabled %}
 :{{ iso.folder_name }}
 set imgfolder {{ iso.folder_name }}
 set architecture x86_64
@@ -67,6 +66,7 @@ set config config.img
 #set config UI_config.img #Single BDE image and create several config.img, each having a different configuration (hardware tests on/off, local/remote erasure, ...)
 set bootparams cow_spacesize=2G libata.allow_tpm=1 memtest=01
 goto params
+
 {% endfor %}
 
 # Booting options that will be selectable for ARCH images
