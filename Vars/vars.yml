@@ -1,17 +1,16 @@
 ---
 # DHCP configuration
 PRIMARY_INTERFACE: ens18   #Primary interface on a VLAN and subnet with an internet connection (and a DHCP server if using a secondary interface for pxe)
+
 USE_PXE_INTERFACE: true   #
 PXE_INTERFACE: ens19   #(optional) Secondary interface on a VLAN and subnet with no DHCP or internet connection
-DHCP_INTERFACE: "{{ PXE_INTERFACE }}" #On which interface the dhcp server acts, either primary or pxe
+
+DHCP_INTERFACE: "{{ PXE_INTERFACE }}" #which interface is used by the dhcp server, either primary or pxe
 SUBNET: 10.250.0.0
 NETMASK: 255.255.255.0
 DNS_SERVER: 1.1.1.1
 
 SERVER_IP: 10.250.0.1   #IP for the dhcp, tftp, and web server, assigned to the pxe interface if used, otherwise assigned to the primary interface
-GATEWAY_IP: "{{ SUBNET | ansible.utils.ipmath(1) }}"   #IP of the gateway. if pxe interface is used, it will be the same as the server IP. if only using primary interface, it will be the IP of your router
-DHCP_RANGE_START: "{{ SUBNET | ansible.utils.ipmath(5) }}" #start of DHCP range, set as the 5th ip in the subnet 
-DHCP_RANGE_END: "{{ (((SUBNET + '/' + NETMASK) | ansible.utils.ipaddr('net')) | ansible.utils.usable_range)['usable_ips'][-3] }}"   #End of DHCP range, set as 2nd to last usable IP (ex: 10.250.0.253) in the subnet, leaving one useable IP at the end before the broadcast IP
 
 #ISO Related Directories
 IMAGES_CONTENT: "{{ WEB_ROOT }}Images_Content"
@@ -34,3 +33,8 @@ isos:
     file_name: bde-volume-7.16.0.iso
     menu_description: Drive Eraser 7.16.0 64-bit
     enabled: true
+
+#SHOULDN'T NEED TO CHANGE, SET BASED ON SUBNET AND NETMASK
+GATEWAY_IP: "{{ SUBNET | ansible.utils.ipmath(1) }}"   #IP of the gateway. if pxe interface is used, it will be the same as the server IP. if only using primary interface, it will be the IP of your router
+DHCP_RANGE_START: "{{ SUBNET | ansible.utils.ipmath(5) }}" #start of DHCP range, set as the 5th ip in the subnet 
+DHCP_RANGE_END: "{{ (((SUBNET + '/' + NETMASK) | ansible.utils.ipaddr('net')) | ansible.utils.usable_range)['usable_ips'][-3] }}"   #End of DHCP range, set as 2nd to last usable IP (ex: 10.250.0.253) in the subnet, leaving one useable IP at the end before the broadcast IP
