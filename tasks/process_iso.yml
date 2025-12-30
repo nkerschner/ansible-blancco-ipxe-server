@@ -26,7 +26,7 @@
     src: /media/ISO/
     dest: "{{ IMAGES_CONTENT }}/{{ iso.folder_name }}/"
     archive: true
-  delegate_to: groups['pxeserver']
+  delegate_to: "{{ SERVER_IP }}"
 #  ansible.builtin.copy:
 #    src: /media/ISO/
 #    dest: "{{ IMAGES_CONTENT }}/{{ iso.folder_name }}/"
