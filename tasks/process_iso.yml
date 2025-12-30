@@ -23,9 +23,9 @@
     
 - name: Copy ISO files
   ansible.posix.synchronize:
-  src: /media/ISO/
-  dest: "{{ IMAGES_CONTENT }}/{{ iso.folder_name }}/"
-  archive: true
+    src: /media/ISO/
+    dest: "{{ IMAGES_CONTENT }}/{{ iso.folder_name }}/"
+    archive: true
 #  ansible.builtin.copy:
 #    src: /media/ISO/
 #    dest: "{{ IMAGES_CONTENT }}/{{ iso.folder_name }}/"
