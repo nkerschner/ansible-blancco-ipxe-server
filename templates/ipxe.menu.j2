@@ -8,7 +8,7 @@ sleep 2
 menu Blancco iPXE boot menu
 
 item --gap --
-{% for iso in isos %}
+{% for iso in isos if iso.enabled %}
 item {{ iso.folder_name }} {{ iso.menu_description }}
 {% endfor %}
 item shell Go to Shell
