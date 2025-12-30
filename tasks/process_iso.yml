@@ -3,8 +3,8 @@
   ansible.builtin.file:
     path: "{{ IMAGES_CONTENT }}/{{ iso.folder_name }}"
     state: directory
-    mode: '0755'
-    recurse: false
+#    mode: '0755'
+#    recurse: false
   register: content_folder_result
     
 - name: Copy ISO to ISO_Images
