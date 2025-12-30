@@ -10,7 +10,7 @@ SUBNET: 10.245.0.0
 NETMASK: 255.255.0.0
 DNS_SERVER: 1.1.1.1
 
-SERVER_IP: 10.245.0.2   #IP for the dhcp, tftp, and web server, assigned to the pxe interface if used, otherwise assigned to the primary interface
+SERVER_IP: 10.245.0.3   #IP for the dhcp, tftp, and web server, assigned to the pxe interface if used, otherwise assigned to the primary interface
 
 #ISO Related Directories
 IMAGES_CONTENT: "{{ WEB_ROOT }}Images_Content"
