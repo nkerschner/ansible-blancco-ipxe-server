@@ -3,6 +3,7 @@
   ansible.builtin.file:
     path: "{{ IMAGES_CONTENT }}/{{ iso.folder_name }}"
     state: directory
+    mode: '0755'
   register: content_folder_result
     
 - name: Copy ISO to ISO_Images
@@ -11,26 +12,26 @@
     dest: "{{ ISO_IMAGES }}/"
   register: copy_ISO_result
     
-- name: Mount ISO
-  ansible.posix.mount:
-    path: /media/ISO
-    src: "{{ ISO_IMAGES }}/{{ iso.file_name  }}"
-    fstype: iso9660
-    opts: "loop"
-    state: ephemeral
-  when: copy_ISO_result.changed or content_folder_result.changed
-  register: mount_ISO_result
-    
-- name: Copy ISO files
-  ansible.posix.synchronize:
-    src: /media/ISO/
-    dest: "{{ IMAGES_CONTENT }}/{{ iso.folder_name }}/"
-    archive: true
-  delegate_to: "{{ SERVER_IP }}"
-  when: mount_ISO_result.changed
-
-- name: Unmount ISO
-  ansible.posix.mount:
-    path: /media/ISO
-    state: unmounted
-  when: mount_ISO_result.changed
+- block:
+    - name: Mount ISO
+      ansible.posix.mount:
+        path: /media/ISO
+        src: "{{ ISO_IMAGES }}/{{ iso.file_name  }}"
+        fstype: iso9660
+        opts: "loop"
+        state: ephemeral
+      when: copy_ISO_result.changed or content_folder_result.changed
+      register: mount_ISO_result
+    - name: Copy ISO files
+      ansible.posix.synchronize:
+        src: /media/ISO/
+        dest: "{{ IMAGES_CONTENT }}/{{ iso.folder_name }}/"
+        archive: true
+      delegate_to: "{{ SERVER_IP }}"
+      when: mount_ISO_result.changed
+  always:
+    - name: Unmount ISO
+      ansible.posix.mount:
+        path: /media/ISO
+        state: unmounted
+      when: mount_ISO_result.changed
