@@ -3,14 +3,14 @@
   hosts: pxeserver
   become: true
   vars_files:
-    - ./Vars/vars.yml
+    - ./vars/vars.yml
   
   pre_tasks:
     - name: Load package variables (dynamically)
       include_vars: "{{ item }}"
       with_first_found:
-        - "Vars/packages_{{ ansible_facts['os_family'] }}.yml"
-        - "Vars/packages_default.yml"
+        - "vars/packages_{{ ansible_facts['os_family'] }}.yml"
+        - "vars/packages_default.yml"
 
   tasks:
     - name: Create image content directory
