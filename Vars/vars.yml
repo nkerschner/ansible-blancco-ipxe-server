@@ -2,15 +2,15 @@
 # DHCP configuration
 PRIMARY_INTERFACE: ens18   #Primary interface on a VLAN and subnet with an internet connection (and a DHCP server if using a secondary interface for pxe)
 
-USE_PXE_INTERFACE: true   #
+USE_PXE_INTERFACE: false   #
 PXE_INTERFACE: ens19   #(optional) Secondary interface on a VLAN and subnet with no DHCP or internet connection
 
 DHCP_INTERFACE: "{{ PXE_INTERFACE }}" #which interface is used by the dhcp server, either primary or pxe
-SUBNET: 10.250.0.0
-NETMASK: 255.255.255.0
+SUBNET: 10.245.0.0
+NETMASK: 255.255.0.0
 DNS_SERVER: 1.1.1.1
 
-SERVER_IP: 10.250.0.1   #IP for the dhcp, tftp, and web server, assigned to the pxe interface if used, otherwise assigned to the primary interface
+SERVER_IP: 10.245.0.2   #IP for the dhcp, tftp, and web server, assigned to the pxe interface if used, otherwise assigned to the primary interface
 
 #ISO Related Directories
 IMAGES_CONTENT: "{{ WEB_ROOT }}Images_Content"
@@ -27,12 +27,12 @@ isos:
   - folder_name: bde_7-17-0_x64
     file_name: ob_Blancco717.iso
     menu_description: Drive Eraser 7.17.0 64-bit
-    enabled: true
+    enabled: false
 
   - folder_name: bde_7-16-0_x64
     file_name: bde-volume-7.16.0.iso
     menu_description: Drive Eraser 7.16.0 64-bit
-    enabled: true
+    enabled: false
 
 #SHOULDN'T NEED TO CHANGE, SET BASED ON SUBNET AND NETMASK
 GATEWAY_IP: "{{ SUBNET | ansible.utils.ipmath(1) }}"   #IP of the gateway. if pxe interface is used, it will be the same as the server IP. if only using primary interface, it will be the IP of your router
