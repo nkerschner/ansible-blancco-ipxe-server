@@ -18,7 +18,7 @@
     fstype: iso9660
     opts: "loop"
     state: ephemeral
-  when: content_folder_result.changed
+  when: copy_ISO_result.changed or content_folder_result.changed
   register: mount_ISO_result
     
 - name: Copy ISO files
@@ -27,13 +27,6 @@
     dest: "{{ IMAGES_CONTENT }}/{{ iso.folder_name }}/"
     archive: true
   delegate_to: "{{ SERVER_IP }}"
-#  ansible.builtin.copy:
-#    src: /media/ISO/
-#    dest: "{{ IMAGES_CONTENT }}/{{ iso.folder_name }}/"
-#    remote_src: true
-#    owner: root
-#    group: root
-#    mode: '0755'
   when: mount_ISO_result.changed
 
 - name: Unmount ISO
