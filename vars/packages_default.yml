@@ -1,4 +1,4 @@
-DHCPD: isc-dhcp-server
+DHCPD: kea
 TFTPD: tftpd-hpa
 APACHE: apache2
 NANO: nano
