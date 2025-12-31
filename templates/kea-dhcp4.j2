@@ -1,0 +1,151 @@
+
+{
+    "Dhcp4": {
+        // Add names of your network interfaces to listen on.
+        "interfaces-config": {
+            "interfaces": ["{{ DHCP_INTERFACE }}"]
+        },
+    
+        "control-socket": {
+            "socket-type": "unix",
+            "socket-name": "kea4-ctrl-socket"
+        },
+
+        "lease-database": {
+            "type": "memfile",
+            "lfc-interval": 3600
+        },
+
+        "expired-leases-processing": {
+            "reclaim-timer-wait-time": 10,
+            "flush-reclaimed-timer-wait-time": 25,
+            "hold-reclaimed-time": 3600,
+            "max-reclaim-leases": 100,
+            "max-reclaim-time": 250,
+            "unwarned-reclaim-cycles": 5
+        },
+
+        "renew-timer": 900,
+        "rebind-timer": 1800,
+        "valid-lifetime": 3600,
+
+        "option-data": [
+            {
+                "name": "domain-name-servers",
+                "data": "{{ DNS_SERVER }}"
+            },
+            {
+                "code": 15,
+                "data": "example.org"
+            },
+            {
+                "name": "domain-search",
+                "data": "mydomain.example.com, example.com"
+            }
+        ],
+
+        "client-classes": [
+            {
+                "name": "iPXE",
+                "test": "option[175].exists",
+                "option-data": [
+                    {
+                        "name": "tftp-server-name",
+                        "data": "{{ SERVER_IP }}"
+                    },
+                    {
+                        "name": "boot-file-name",
+                        "data": "http://{{ SERVER_IP }}/ipxe.menu"
+                    }
+                ]
+            },
+            {
+                "name": "UEFI clients",
+                "test": "option[93].hex == 0x0007 and not option[175].exists",
+                "option-data": [
+                    {
+                        "name": "tftp-server-name",
+                        "data": "{{ SERVER_IP }}"
+                    },
+                    {
+                        "name": "boot-file-name",
+                        "data": "snponly_64bit.efi"
+                    }
+                ]
+            },
+            {
+                "name": "BIOS clients",
+                "test": "option[93].hex == 0x0000 and not option[175].exists",
+                "option-data": [
+                    {
+                        "name": "tftp-server-name",
+                        "data": "{{ SERVER_IP }}"
+                    },
+                    {
+                        "name": "boot-file-name",
+                        "data": "undionly.kpxe"
+                    }
+                ]
+            }
+        ],
+
+        "subnet4": [
+            {
+                "id": 1,
+                "subnet": "{{ (SUBNET + '/' + NETMASK) | ansible.utils.ipaddr('net') }}",
+                "pools": [ { "pool": "{{ DHCP_RANGE_START }} - {{ DHCP_RANGE_END }}" } ],
+
+                "option-data": [
+                    {
+                        "name": "routers",
+                        "data": "{{ GATEWAY_IP }}"
+                    }
+                ]
+            }
+        ],
+
+        "loggers": [
+        {
+            // This section affects kea-dhcp4, which is the base logger for DHCPv4
+            // component. It tells DHCPv4 server to write all log messages (on
+            // severity INFO or more) to a file.
+            "name": "kea-dhcp4",
+            "output-options": [
+                {
+                    // Specifies the output file. There are several special values
+                    // supported:
+                    // - stdout (prints on standard output)
+                    // - stderr (prints on standard error)
+                    // - syslog (logs to syslog)
+                    // - syslog:name (logs to syslog using specified name)
+                    // Any other value is considered a name of the file
+                    "output": "stdout",
+    
+                    // Shorter log pattern suitable for use with systemd,
+                    // avoids redundant information
+                    "pattern": "%-5p %m\n"
+
+                    // This governs whether the log output is flushed to disk after
+                    // every write.
+                    // "flush": false,
+  
+                    // This specifies the maximum size of the file before it is
+                    // rotated.
+                    // "maxsize": 1048576,
+
+                   // This specifies the maximum number of rotated files to keep.
+                    // "maxver": 8
+                }
+            ],
+            // This specifies the severity of log messages to keep. Supported values
+            // are: FATAL, ERROR, WARN, INFO, DEBUG
+            "severity": "INFO",
+
+            // If DEBUG level is specified, this value is used. 0 is least verbose,
+            // 99 is most verbose. Be cautious, Kea can generate lots and lots
+            // of logs if told to do so.
+            "debuglevel": 0
+        }
+        ]
+    }
+}
