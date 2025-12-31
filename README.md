@@ -7,5 +7,3 @@ On your target machine, it will deploy a dhcp server, a tftp server, a web serve
 - Network
 - Server
 - Ansible controller
-
-## S
