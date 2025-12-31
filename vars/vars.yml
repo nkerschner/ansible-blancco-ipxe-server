@@ -9,7 +9,7 @@ DHCP_INTERFACE: "{{ PRIMARY_INTERFACE }}"   #DHCP server responds to requests on
 #DHCP_INTERFACE: "{{ PXE_INTERFACE }}"   #DHCP server responds to requests on the PXE interface, use when using PXE interface
 SUBNET: 10.245.0.0
 NETMASK: 255.255.0.0
-DNS_SERVER: 1.1.1.1
+DNS_SERVER: 1.1.1.1   #can have multiple DNS servers separated by a comma and a space (ex: 1.1.1.1, 8.8.8.8)
 
 SERVER_IP: 10.245.0.2   #IP for the dhcp, tftp, and web server, assigned to the pxe interface if used, otherwise assigned to the primary interface
 
