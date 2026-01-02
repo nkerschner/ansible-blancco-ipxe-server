@@ -9,8 +9,6 @@ SUBNET: 10.245.0.0
 NETMASK: 255.255.0.0
 DNS_SERVER: 1.1.1.1   #can have multiple DNS servers separated by a comma and a space (ex: 1.1.1.1, 8.8.8.8)
 
-#SERVER_IP: 10.245.0.3   #IP for the dhcp, tftp, and web server, assigned to the pxe interface if used, otherwise assigned to the primary interface
-
 #ISO Related Directories
 IMAGES_CONTENT: "{{ WEB_ROOT }}Images_Content"
 ISO_IMAGES: "{{ WEB_ROOT }}ISO_Images"
@@ -22,7 +20,7 @@ isos:
     file_name: bde-7180-pc.iso   #ISO file name in local folder
     menu_description: Drive Eraser 7.18.0 64-bit   #description of ISO that will appear in the ipxe menu
     enabled: true
-  
+
   - folder_name: dev-bde_7-18-0_x64   #desired name of folder that will be created for contents of ISO
     file_name: dev-bde-7180-pc.iso   #ISO file name in local folder
     menu_description: Drive Eraser 7.18.0 64-bit Development Workflow   #description of ISO that will appear in the ipxe menu
@@ -32,7 +30,7 @@ isos:
     file_name: bde-7172-pc.iso
     menu_description: Drive Eraser 7.17.2 64-bit
     enabled: true
-  
+
   - folder_name: dev-bde_7-17-2_x64
     file_name: dev-bde-7172-pc.iso
     menu_description: Drive Eraser 7.17.2 64-bit Development Workflow
