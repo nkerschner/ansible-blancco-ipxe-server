@@ -195,19 +195,19 @@
       when: USE_PXE_INTERFACE
     
     - name: enable TFTP
-      ansible.builtin.systemd_service:
+      ansible.builtin.service:
         name: "{{ TFTPD }}"
         enabled: true
         state: started
     
     - name: enable dhcp server
-      ansible.builtin.systemd_service:
+      ansible.builtin.service:
         name: "{{ DHCPD }}"
         enabled: true
         state: started
     
     - name: enable apache2
-      ansible.builtin.systemd_service:
+      ansible.builtin.service:
         name: "{{ APACHE }}"
         enabled: true
         state: started
