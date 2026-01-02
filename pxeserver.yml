@@ -32,6 +32,17 @@
       with_first_found:
         - "vars/packages_{{ ansible_facts['os_family'] }}.yml"
         - "vars/packages_default.yml"
+    
+    - name: Set DHCP interface and server IP when using single interface
+      ansible.builtin.set_fact:
+        DHCP_INTERFACE: "{{ PRIMARY_INTERFACE }}"
+        SERVER_IP: "{{ ansible_facts['default_ipv4']['address'] }}"
+      when: USE_PXE_INTERFACE is false
+    - name: Set DHCP interface and server IP when using pxe interface
+      ansible.builtin.set_fact:
+        DHCP_INTERFACE: "{{ PXE_INTERFACE }}"
+        SERVER_IP: "{{ GATEWAY_IP }}"
+      when: USE_PXE_INTERFACE
 
   tasks:
     - name: Update apt cache
