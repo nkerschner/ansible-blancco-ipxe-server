@@ -1,21 +1,21 @@
 ---
-- name: Install rsync
-  ansible.builtin.package:
-    name: "{{ RSYNC }}"  
+  - name: Install rsync
+    ansible.builtin.package:
+      name: "{{ RSYNC }}"  
 
-- name: Create folder for ISO Content
-  ansible.builtin.file:
-    path: "{{ IMAGES_CONTENT }}/{{ iso.folder_name }}"
-    state: directory
-  register: content_folder_result
+  - name: Create folder for ISO Content
+    ansible.builtin.file:
+      path: "{{ IMAGES_CONTENT }}/{{ iso.folder_name }}"
+      state: directory
+    register: content_folder_result
     
-- name: Copy ISO to ISO_Images
-  ansible.builtin.copy:
-    src: ./ISO/{{ iso.file_name }}
-    dest: "{{ ISO_IMAGES }}/"
-  register: copy_ISO_result
+  - name: Copy ISO to ISO_Images
+    ansible.builtin.copy:
+      src: ./ISO/{{ iso.file_name }}
+      dest: "{{ ISO_IMAGES }}/"
+    register: copy_ISO_result
     
-- block:
+  - block:
     - name: Mount ISO
       ansible.posix.mount:
         path: /media/ISO
@@ -32,7 +32,7 @@
         archive: true
       delegate_to: "{{ SERVER_IP }}"
       when: mount_ISO_result.changed
-  always:
+    always:
     - name: Unmount ISO
       ansible.posix.mount:
         path: /media/ISO
