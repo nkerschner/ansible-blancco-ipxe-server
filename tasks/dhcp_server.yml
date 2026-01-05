@@ -31,6 +31,7 @@
       owner: root
       group: root
       mode: '0644'
+    when: DHCPD == "kea-dhcp4-server"
     notify:
       - Restart DHCP
   - name: Enable DHCP server
