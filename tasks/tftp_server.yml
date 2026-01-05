@@ -1,0 +1,23 @@
+---
+  - name: Install/update TFTP server
+    ansible.builtin.apt:
+      name: "{{ TFTPD }}"
+      state: latest
+  - name: Ensure TFTP directory exists
+    ansible.builtin.file:
+      path: "{{ TFTP_ROOT }}"
+      state: directory
+      mode: '0755'
+  - name: Configure TFTP directory to use tftp_root directory
+    ansible.builtin.lineinfile:
+      path: "/etc/default/{{ TFTPD }}"
+      regexp: "TFTP_DIRECTORY="
+      line: 'TFTP_DIRECTORY="{{ TFTP_ROOT }}"'
+      state: present
+    notify:
+      - Restart TFTP
+  - name: Move pxe files to TFTP directory
+    ansible.builtin.copy:
+      src: ./Boot/
+      dest: "{{ TFTP_ROOT }}"
+      mode: '0755'

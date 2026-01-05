@@ -54,7 +54,6 @@
       ansible.builtin.apt:
         name:
           - "{{ DHCPD }}"
-          - "{{ TFTPD }}"
           - "{{ APACHE }}"
           - "{{ NANO }}"
           - "{{ UNZIP }}"
@@ -82,26 +81,8 @@
       ansible.builtin.command: "ifup {{ PXE_INTERFACE }}"
       when: secondary_iface_result.changed
 
-    - name: Make sure TFTP directory exists
-      ansible.builtin.file:
-        path: "{{ TFTP_ROOT }}"
-        state: directory
-        mode: '0755'
-    
-    - name: Configure TFTP to use set root directory
-      ansible.builtin.lineinfile:
-        path: "/etc/default/{{ TFTPD }}"
-        regexp: "TFTP_DIRECTORY="
-        line: 'TFTP_DIRECTORY="{{ TFTP_ROOT }}"'
-        state: present
-      notify:
-        - Restart TFTP
-    
-    - name: Move pxe files to TFTP directory
-      ansible.builtin.copy:
-        src: ./Boot/
-        dest: "{{ TFTP_ROOT }}"
-        mode: '0755'
+    - name: Setup TFTP server
+      ansible.builtin.import_tasks: ./tasks/tftp_server.yml
 
     - name: Configure DHCP interface (isc-dhcp-server)
       ansible.builtin.lineinfile:
