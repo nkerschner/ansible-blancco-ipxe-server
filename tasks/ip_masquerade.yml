@@ -1,0 +1,25 @@
+---
+  - name: Install nftables
+    ansible.builtin.package:
+      name: "{{ NFTABLES }}"
+      state: latest
+  - name: Enable IP passthrough
+    ansible.posix.sysctl:
+      name: net.ipv4.ip_forward
+      value: '1'
+      sysctl_set: true
+      state: present
+      reload: true
+  - name: Write IPv4 rules into rules.v4
+    ansible.builtin.template:
+      src: ./templates/nftables.j2
+      dest: /etc/nftables.conf
+      owner: root
+      group: root
+      mode: '0640'
+    notify: Restart nftables
+  - name: Enable nftables
+    ansible.builtin.service:
+      name: "{{ NFTABLES }}"
+      enabled: true
+      state: started

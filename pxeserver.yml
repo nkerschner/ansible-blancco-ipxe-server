@@ -57,7 +57,6 @@
           - "{{ NANO }}"
           - "{{ UNZIP }}"
           - "{{ NET_TOOLS }}"
-          - "{{ NFTABLES }}"
         state: latest
     
     - name: Configure secondary (PXE) network interface
@@ -76,29 +75,7 @@
     - name: Process ISOs and create iPXE menu
       ansible.builtin.import_tasks: ./tasks/iso_and_ipxe_menu.yml
 
-    - name: Enable IP passthrough
-      ansible.posix.sysctl:
-        name: net.ipv4.ip_forward
-        value: '1'
-        sysctl_set: true
-        state: present
-        reload: true
-      when: USE_PXE_INTERFACE
-    
-    - name: write ipv4 rules into rules.v4
-      ansible.builtin.template:
-        src: ./templates/nftables.j2
-        dest: /etc/nftables.conf
-        owner: root
-        group: root
-        mode: '0640'
-      notify: Restart nftables
-      when: USE_PXE_INTERFACE
-
-    - name: enable nftables
-      ansible.builtin.service:
-        name: "{{ NFTABLES }}"
-        enabled: true
-        state: started
+    - name: Setup IP masquerading
+      ansible.builtin.import_tasks: ./tasks/ip_masquerade.yml
       when: USE_PXE_INTERFACE
 
