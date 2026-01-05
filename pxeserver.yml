@@ -53,7 +53,6 @@
     - name: Install required packages
       ansible.builtin.apt:
         name:
-          - "{{ APACHE }}"
           - "{{ NANO }}"
           - "{{ UNZIP }}"
           - "{{ NET_TOOLS }}"
@@ -84,6 +83,9 @@
 
     - name: Setup DHCP server
       ansible.builtin.import_tasks: ./tasks/dhcp_server.yml
+    
+    - name: Setup Apache server
+      ansible.builtin.import_tasks: ./tasks/apache.yml
 
     - name: Process ISOs and create iPXE menu
       ansible.builtin.import_tasks: ./tasks/iso_and_ipxe_menu.yml
@@ -118,12 +120,6 @@
         name: "{{ DHCPD }}"
         enabled: true
         state: started
-    
-    - name: enable apache2
-      ansible.builtin.service:
-        name: "{{ APACHE }}"
-        enabled: true
-        state: started
 
     - name: enable nftables
       ansible.builtin.service:
@@ -131,11 +127,4 @@
         enabled: true
         state: started
       when: USE_PXE_INTERFACE
-    
-    - name: Allow http service through firewalld
-      ansible.posix.firewalld:
-        service: http
-        state: enabled
-        permanent: true
-        immediate: true
-      when: ansible_facts['os_family'] == 'RedHat'
+

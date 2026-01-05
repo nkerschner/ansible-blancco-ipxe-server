@@ -1,0 +1,16 @@
+---
+  - name: Install Apache
+    ansible.builtin.package:
+      name: "{{ APACHE }}"
+  - name: Enable Apache
+    ansible.builtin.service:
+      name: "{{ APACHE }}"
+      enabled: true
+      state: started
+  - name: Allow Apache service through firewalld (Red Hat)
+    ansible.posix.firewalld:
+      service: http
+      state: enabled
+      permanent: true
+      immediate: true
+    when: ansible_facts['os_family'] == 'RedHat'
