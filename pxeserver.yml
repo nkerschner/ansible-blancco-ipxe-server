@@ -60,24 +60,9 @@
           - "{{ NFTABLES }}"
         state: latest
     
-    - name: Configure secondary network interface using a template file (Debian)
-      ansible.builtin.template:
-        src: ./templates/pxe-iface.j2
-        dest: /etc/network/interfaces.d/{{ PXE_INTERFACE }}.cfg
-        owner: root
-        group: root
-        mode: '0644'
-      when: 
-        - USE_PXE_INTERFACE
-        - ansible_facts['os_family'] == 'Debian'
-      register: secondary_iface_result
-      notify:
-        - Restart network interface
-        - Restart TFTP
-      
-    - name: Enable secondary network interface
-      ansible.builtin.command: "ifup {{ PXE_INTERFACE }}"
-      when: secondary_iface_result.changed
+    - name: Configure secondary (PXE) network interface
+      ansible.builtin.import_tasks: ./tasks/pxe_iface.yml
+      when: USE_PXE_INTERFACE
 
     - name: Setup TFTP server
       ansible.builtin.import_tasks: ./tasks/tftp_server.yml
