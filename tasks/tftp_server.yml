@@ -1,6 +1,6 @@
 ---
   - name: Install/update TFTP server
-    ansible.builtin.apt:
+    ansible.builtin.package:
       name: "{{ TFTPD }}"
       state: latest
   - name: Ensure TFTP directory exists
