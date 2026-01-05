@@ -23,36 +23,4 @@
 
   tasks:
     - name: Create image content directory
-      ansible.builtin.file:
-        path: "{{ IMAGES_CONTENT }}"
-        state: directory
-        mode: '0755'
-    
-    - name: Create ISO directory
-      ansible.builtin.file:
-        path: "{{ ISO_IMAGES }}"
-        state: directory
-        mode: '0755'
-    
-    - name: Create ISO mount directory
-      ansible.builtin.file:
-        path: /media/ISO
-        state: directory
-        mode: '0755'
-
-    # loop to process ISOs
-    - name: Process ISOs
-      ansible.builtin.include_tasks: ./tasks/process_iso.yml
-      loop: "{{ isos }}"
-      loop_control:
-        loop_var: iso
-        label: "{{ iso.folder_name }}"
-      when: iso.enabled | default(true) | bool
-
-    - name: iPXE menu
-      ansible.builtin.template:
-        src: ./templates/ipxe.menu.j2
-        dest: "{{ WEB_ROOT }}/ipxe.menu"
-        owner: root
-        group: root
-        mode: '0644'
+      ansible.builtin.import_tasks: ./tasks/iso_and_ipxe_menu.yml
