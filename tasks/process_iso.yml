@@ -1,8 +1,4 @@
 ---
-  - name: Install rsync
-    ansible.builtin.package:
-      name: "{{ RSYNC }}"  
-
   - name: Create folder for ISO Content
     ansible.builtin.file:
       path: "{{ IMAGES_CONTENT }}/{{ iso.folder_name }}"
