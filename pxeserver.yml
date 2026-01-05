@@ -53,13 +53,11 @@
     - name: Install required packages
       ansible.builtin.apt:
         name:
-#          - "{{ DHCPD }}"
           - "{{ APACHE }}"
           - "{{ NANO }}"
           - "{{ UNZIP }}"
           - "{{ NET_TOOLS }}"
           - "{{ NFTABLES }}"
-          - "{{ RSYNC }}"
         state: latest
     
     - name: Configure secondary network interface using a template file (Debian)
