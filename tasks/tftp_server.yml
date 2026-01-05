@@ -22,7 +22,7 @@
       dest: "{{ TFTP_ROOT }}"
       mode: '0755'
   - name: enable TFTP
-    ansible.builtin.service:
+    ansible.builtin.systemd_service:
       name: "{{ TFTPD }}"
       enabled: true
       state: started

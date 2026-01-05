@@ -35,7 +35,7 @@
     notify:
       - Restart DHCP
   - name: Enable DHCP server
-    ansible.builtin.service:
+    ansible.builtin.systemd_service:
       name: "{{ DHCPD }}"
       enabled: true
       state: started
