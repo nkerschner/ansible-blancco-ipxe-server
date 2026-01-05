@@ -1,0 +1,35 @@
+---
+  - name: Install DHCP server
+    ansible.builtin.package:
+      name: "{{ DHCPD }}"
+  - name: Configure DHCP interface (isc-dhcp-server)
+    ansible.builtin.lineinfile:
+      path: "/etc/default/{{ DHCPD }}"
+      regexp: "{{ item.regexp }}"
+      line: "{{ item.line }}"
+    with_items:
+      - regexp: "DHCPDv4_CONF="
+        line: "DHCPDv4_CONF=/etc/dhcp/dhcpd.conf"
+      - regexp: "INTERFACESv4="
+        line: 'INTERFACESv4="{{ DHCP_INTERFACE }}"'
+    when: DHCPD == "isc-dhcp-server"
+    notify:
+      - Restart DHCP
+  - name: Configure DHCP server (isc-dhcp-server)
+    ansible.builtin.template:
+      src: ./templates/dhcpd.j2
+      dest: /etc/dhcp/dhcpd.conf
+      owner: root
+      group: root
+      mode: '0644'
+    when: DHCPD == "isc-dhcp-server"
+    notify: Restart DHCP
+  - name: Configure DHCP server (KEA-dhcp4)
+    ansible.builtin.template:
+      src: ./templates/kea-dhcp4.j2
+      dest: /etc/kea/kea-dhcp4.conf
+      owner: root
+      group: root
+      mode: '0644'
+    notify:
+      - Restart DHCP
