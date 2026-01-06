@@ -23,7 +23,7 @@
     loop: "{{ isos }}"
     loop_control:
       loop_var: iso
-      label: "{{ iso.folder_name }}"
+      label: "{{ iso.file_name | ansible.builtin.splitext | first }}"
     when: iso.enabled | default(true) | bool
   - name: iPXE menu
     ansible.builtin.template:

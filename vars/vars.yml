@@ -9,37 +9,32 @@ SUBNET: 10.245.0.0
 NETMASK: 255.255.0.0
 DNS_SERVER: 1.1.1.1   #can have multiple DNS servers separated by a comma and a space (ex: 1.1.1.1, 8.8.8.8)
 
-#ISO Related Directories
-IMAGES_CONTENT: "{{ WEB_ROOT }}Images_Content"
-ISO_IMAGES: "{{ WEB_ROOT }}ISO_Images"
-
 #ISO info
-default_iso_folder_name:  bde_7-18-0_x64  #default iso for ipxe menu
+default_iso_name:  bde-7180-pc.iso  #default iso for ipxe menu
 isos:
-  - folder_name: bde_7-18-0_x64   #desired name of folder that will be created for contents of ISO
-    file_name: bde-7180-pc.iso   #ISO file name in local folder
+  - file_name: bde-7180-pc.iso   #ISO file name in local folder
     menu_description: Drive Eraser 7.18.0 64-bit   #description of ISO that will appear in the ipxe menu
     enabled: true
 
-  - folder_name: dev-bde_7-18-0_x64   #desired name of folder that will be created for contents of ISO
-    file_name: dev-bde-7180-pc.iso   #ISO file name in local folder
-    menu_description: Drive Eraser 7.18.0 64-bit Development Workflow   #description of ISO that will appear in the ipxe menu
+  - file_name: dev-bde-7180-pc.iso
+    menu_description: Drive Eraser 7.18.0 64-bit Development Workflow
     enabled: true
 
-  - folder_name: bde_7-17-2_x64
-    file_name: bde-7172-pc.iso
+  - file_name: bde-7172-pc.iso
     menu_description: Drive Eraser 7.17.2 64-bit
     enabled: true
 
-  - folder_name: dev-bde_7-17-2_x64
-    file_name: dev-bde-7172-pc.iso
+  - file_name: dev-bde-7172-pc.iso
     menu_description: Drive Eraser 7.17.2 64-bit Development Workflow
     enabled: true
 
-  - folder_name: bde_7-17-1_x64
-    file_name: bde-7171-pc.iso
+  - file_name: bde-7171-pc.iso
     menu_description: Drive Eraser 7.17.1 64-bit
     enabled: true
+
+#ISO Related Directories
+IMAGES_CONTENT: "{{ WEB_ROOT }}Images_Content"
+ISO_IMAGES: "{{ WEB_ROOT }}ISO_Images"
 
 #SHOULDN'T NEED TO CHANGE, SET BASED ON SUBNET AND NETMASK
 GATEWAY_IP: "{{ SUBNET | ansible.utils.ipmath(1) }}"   #IP of the gateway. if pxe interface is used, it will be the same as the server IP. if only using primary interface, it will be the IP of your router

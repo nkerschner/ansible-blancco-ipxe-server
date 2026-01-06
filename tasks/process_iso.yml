@@ -1,7 +1,7 @@
 ---
   - name: Create folder for ISO Content
     ansible.builtin.file:
-      path: "{{ IMAGES_CONTENT }}/{{ iso.folder_name }}"
+      path: "{{ IMAGES_CONTENT }}/{{ iso.file_name | ansible.builtin.splitext | first }}"
       state: directory
     register: content_folder_result
     
@@ -24,7 +24,7 @@
     - name: Copy ISO files
       ansible.posix.synchronize:
         src: /media/ISO/
-        dest: "{{ IMAGES_CONTENT }}/{{ iso.folder_name }}/"
+        dest: "{{ IMAGES_CONTENT }}/{{ iso.file_name | ansible.builtin.splitext | first }}/"
         archive: true
       delegate_to: "{{ SERVER_IP }}"
       when: mount_ISO_result.changed

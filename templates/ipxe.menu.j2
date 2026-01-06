@@ -9,14 +9,14 @@ menu Blancco iPXE boot menu
 
 item --gap --
 {% for iso in isos if iso.enabled %}
-item {{ iso.folder_name }} {{ iso.menu_description }}
+item {{ iso.file_name | ansible.builtin.splitext | first }} {{ iso.menu_description }}
 {% endfor %}
 item shell Go to Shell
 item reboot Reboot
 #item shutdown Shutdown
 item
 item --key x exit
-choose --default {{ default_iso_folder_name }} --timeout 30000 selected || goto cancel
+choose --default {{ default_iso_name }} --timeout 30000 selected || goto cancel
 goto ${selected}
 
 :cancel
@@ -55,8 +55,8 @@ poweroff
 
 # Define the path to the images here
 {% for iso in isos if iso.enabled %}
-:{{ iso.folder_name }}
-set imgfolder {{ iso.folder_name }}
+:{{ iso.file_name | ansible.builtin.splitext | first }}
+set imgfolder {{ iso.file_name | ansible.builtin.splitext | first }}
 set architecture x86_64
 set vmlinuz vmlinuz-bde-linux
 set archiso initramfs-bde-linux.img
