@@ -5,28 +5,6 @@
   vars_files:
     - ./vars/vars.yml
 
-  handlers:
-#    - name: Restart network interface
-#      ansible.builtin.shell: |
-#        "ifdown {{ PXE_INTERFACE }}"
-#        "ifup {{ PXE_INTERFACE }}"
-#      changed_when: true
-
-    - name: Restart TFTP
-      ansible.builtin.service:
-        name: tftpd-hpa
-        state: restarted
-
-    - name: Restart DHCP
-      ansible.builtin.service:
-        name: isc-dhcp-server
-        state: restarted
-
-    - name: Restart nftables
-      ansible.builtin.service:
-        name: nftables
-        state: restarted
-
   pre_tasks:
     - name: Load package variables (dynamically)
       include_vars: "{{ item }}"
@@ -42,11 +20,13 @@
        
     - name: Disable secondary network interface
       ansible.builtin.command: "ifdown {{ PXE_INTERFACE }}"
+      when: USE_PXE_INTERFACE
 
     - name: Remove secondary network interface configuration file
       ansible.builtin.file:
         path: /etc/network/interfaces.d/{{ PXE_INTERFACE }}.cfg
         state: absent
+      when: USE_PXE_INTERFACE
     
     - name: Remove pxe files from TFTP directory
       ansible.builtin.file:
@@ -91,14 +71,14 @@
         sysctl_set: true
         state: present
         reload: true
+      when: USE_PXE_INTERFACE
     
     - name: Uninstall installed packages
       ansible.builtin.apt:
         name:
-          - isc-dhcp-server
-          - tftpd-hpa
-          - apache2
-          - unzip
-          - nftables
-          - rsync
+          - "{{ DHCPD }}"
+          - "{{ TFTPD }}"
+          - "{{ APACHE }}"
+          - "{{ NFTABLES }}"
+          - "{{ RSYNC }}"
         state: absent
