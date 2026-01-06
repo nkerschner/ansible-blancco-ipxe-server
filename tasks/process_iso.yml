@@ -26,7 +26,7 @@
         src: /media/ISO/
         dest: "{{ IMAGES_CONTENT }}/{{ iso.file_name | ansible.builtin.splitext | first }}/"
         archive: true
-      delegate_to: "{{ SERVER_IP }}"
+      delegate_to: "{{ ansible_facts['default_ipv4']['address'] }}"
       when: mount_ISO_result.changed
     always:
     - name: Unmount ISO
