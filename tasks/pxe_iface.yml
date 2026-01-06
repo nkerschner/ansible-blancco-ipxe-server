@@ -6,7 +6,8 @@
       owner: root
       group: root
       mode: '0644'
-    when: ansbile_facts['os_family'] == 'Debian'
+    when: ansible_facts['os_family'] == 'Debian'
+    register: secondary_iface_result
     notify:
       - Restart network interface
       - Restart TFTP
