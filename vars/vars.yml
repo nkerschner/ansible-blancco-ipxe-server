@@ -22,21 +22,27 @@ isos:
 
   - file_name: bde-7172-pc.iso
     menu_description: Drive Eraser 7.17.2 64-bit
-    enabled: true
+    enabled: false
 
   - file_name: dev-bde-7172-pc.iso
     menu_description: Drive Eraser 7.17.2 64-bit Development Workflow
-    enabled: true
+    enabled: false
 
   - file_name: bde-7171-pc.iso
     menu_description: Drive Eraser 7.17.1 64-bit
-    enabled: true
+    enabled: false
 
-#ISO Related Directories
+#   NOTHING BELOW HERE SHOULD NEED TO BE CHANGED
+
+#ISO Related Directories (DON'T CHANGE)
 IMAGES_CONTENT: "{{ WEB_ROOT }}Images_Content"
 ISO_IMAGES: "{{ WEB_ROOT }}ISO_Images"
 
-#SHOULDN'T NEED TO CHANGE, SET BASED ON SUBNET AND NETMASK
+#Set conditionally based on if using PXE interface
+DHCP_INTERFACE: "{{ PXE_INTERFACE if USE_PXE_INTERFACE else PRIMARY_INTERFACE }}"
+SERVER_IP: "{{ GATEWAY_IP if USE_PXE_INTERFACE else ansible_facts['default_ipv4']['address'] }}"
+
+#SET BASED ON SUBNET AND NETMASK
 GATEWAY_IP: "{{ SUBNET | ansible.utils.ipmath(1) }}"   #IP of the gateway. if pxe interface is used, it will be the same as the server IP. if only using primary interface, it will be the IP of your router
 DHCP_RANGE_START: "{{ SUBNET | ansible.utils.ipmath(5) }}" #start of DHCP range, set as the 5th ip in the subnet 
 DHCP_RANGE_END: "{{ (((SUBNET + '/' + NETMASK) | ansible.utils.ipaddr('net')) | ansible.utils.usable_range)['usable_ips'][-3] }}"   #End of DHCP range, set as 2nd to last usable IP (ex: 10.250.0.253) in the subnet, leaving one useable IP at the end before the broadcast IP
