@@ -7,7 +7,7 @@ On your target machine, it will deploy a dhcp server, a tftp server, a web serve
 - Network
   - OPTION 1: VLAN with internet access, but no DHCP server
   - OPTION 2: VLAN with no internet access or dhcp server (will require 2 NICs on server)
-- Server
+- Server (currently only Debian supported)
 - Ansible controller
 - User on Server with passwordless sudo access
 - SSH key access from Ansible controller to User on Server
