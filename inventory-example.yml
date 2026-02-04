@@ -1,0 +1,5 @@
+pxeserver:
+  hosts:
+    10.0.0.5: #replace with ip or hostname
+  vars:
+    ansible_user: ansible-runner #replace "ansible-runner" with username on host, needs sudo permissions (with no password required)
