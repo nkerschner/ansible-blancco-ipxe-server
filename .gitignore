@@ -3,3 +3,5 @@
 vars.yml
 inventory.yml
 test.yml
+id_*
+.vscode/*
