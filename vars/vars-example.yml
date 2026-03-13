@@ -20,7 +20,9 @@ isos:
     menu_description: description of second iso
     enabled: false
 
-####    NOTHING BELOW HERE SHOULD NEED TO BE CHANGED    ####
+####################################################################
+######      NOTHING BELOW HERE SHOULD NEED TO BE CHANGED      ######
+####################################################################
 
 #(DON'T CHANGE) ISO Related Directories 
 IMAGES_CONTENT: "{{ WEB_ROOT }}Images_Content"
