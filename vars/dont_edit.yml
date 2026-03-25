@@ -7,7 +7,7 @@ PRIMARY_INTERFACE: "{{ ansible_facts['default_ipv4']['interface'] }}"   #Primary
 DHCP_INTERFACE: "{{ PXE_INTERFACE if USE_PXE_INTERFACE else PRIMARY_INTERFACE }}"
 SUBNET: "{{ PXE_SUBNET if USE_PXE_INTERFACE else ansible_facts['default_ipv4']['network'] }}"
 NETMASK: "{{ PXE_NETMASK if USE_PXE_INTERFACE else ansible_facts['default_ipv4']['netmask'] }}"
-DNS_SERVER: "{{ PXE_DNS_SERVER if USE_PXE_INTERFACE else ansible_facts['dns']['nameservers'] }}"
+DNS_SERVER: "{{ PXE_DNS_SERVER if USE_PXE_INTERFACE else GATEWAY_IP }}"
 GATEWAY_IP: "{{ SUBNET | ansible.utils.ipmath(1) if USE_PXE_INTERFACE else ansible_facts['default_ipv4']['gateway'] }}"   #IP of the gateway. if pxe interface is used, it will be the same as the server IP. if only using primary interface, it will be the IP of your router
 DHCP_RANGE_START: "{{ SUBNET | ansible.utils.ipmath(5) }}" #start of DHCP range, set as the 5th ip in the subnet 
 DHCP_RANGE_END: "{{ (((SUBNET + '/' + NETMASK) | ansible.utils.ipaddr('net')) | ansible.utils.usable_range)['usable_ips'][-3] }}"   #End of DHCP range, set as 2nd to last usable IP (ex: 10.250.0.253) in the subnet, leaving one useable IP at the end before the broadcast IP
