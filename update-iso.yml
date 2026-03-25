@@ -11,16 +11,6 @@
       with_first_found:
         - "vars/packages_{{ ansible_facts['os_family'] }}.yml"
         - "vars/packages_default.yml"
-    
-    - name: Set server IP when using single interface
-      ansible.builtin.set_fact:
-        SERVER_IP: "{{ ansible_facts['default_ipv4']['address'] }}"
-      when: USE_PXE_INTERFACE is false
-    - name: Set server IP when using pxe interface
-      ansible.builtin.set_fact:
-        SERVER_IP: "{{ GATEWAY_IP }}"
-      when: USE_PXE_INTERFACE
-
   tasks:
     - name: Create image content directory
       ansible.builtin.import_tasks: ./tasks/iso_and_ipxe_menu.yml
