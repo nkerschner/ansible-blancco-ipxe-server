@@ -1,14 +1,4 @@
 ---
-# DHCP configuration
-PRIMARY_INTERFACE: ens18   #Primary interface on a VLAN and subnet with an internet connection (and a DHCP server if using a secondary interface for pxe)
-
-USE_PXE_INTERFACE: false   #
-PXE_INTERFACE: ens19   #(optional) Secondary interface on a VLAN and subnet with no DHCP or internet connection
-
-SUBNET: 10.250.0.0
-NETMASK: 255.255.0.0
-DNS_SERVER: 1.1.1.1, 8.8.8.8   #can have multiple DNS servers separated by a comma and a space (ex: 1.1.1.1, 8.8.8.8)
-
 #ISO info
 default_iso_name:  first.iso  #default iso for ipxe menu
 isos:
@@ -20,19 +10,13 @@ isos:
     menu_description: description of second iso
     enabled: false
 
-####################################################################
-######      NOTHING BELOW HERE SHOULD NEED TO BE CHANGED      ######
-####################################################################
+# pxe network info
+USE_PXE_INTERFACE: false   # using a secondary network interface for the PXE network, rather than a single interface
+# PXE DHCP configuration:
+# (only needed if using pxe interface)
+PXE_INTERFACE: ens19   # Secondary interface on a VLAN and subnet with no DHCP or internet connection
+PXE_SUBNET: 10.250.0.0
+PXE_NETMASK: 255.255.0.0
+PXE_DNS_SERVER: 1.1.1.1, 8.8.8.8   #can have multiple DNS servers separated by a comma and a space (ex: 1.1.1.1, 8.8.8.8)
 
-#(DON'T CHANGE) ISO Related Directories 
-IMAGES_CONTENT: "{{ WEB_ROOT }}Images_Content"
-ISO_IMAGES: "{{ WEB_ROOT }}ISO_Images"
 
-#(DON'T CHANGE) DHCP interface and server IP assigned based on if using PXE interface
-DHCP_INTERFACE: "{{ PXE_INTERFACE if USE_PXE_INTERFACE else PRIMARY_INTERFACE }}"
-SERVER_IP: "{{ GATEWAY_IP if USE_PXE_INTERFACE else ansible_facts['default_ipv4']['address'] }}"
-
-#(DON'T CHANGE) DHCP subnet options calculated based on subnet and netmask
-GATEWAY_IP: "{{ SUBNET | ansible.utils.ipmath(1) }}"   #IP of the gateway. if pxe interface is used, it will be the same as the server IP. if only using primary interface, it will be the IP of your router
-DHCP_RANGE_START: "{{ SUBNET | ansible.utils.ipmath(5) }}" #start of DHCP range, set as the 5th ip in the subnet 
-DHCP_RANGE_END: "{{ (((SUBNET + '/' + NETMASK) | ansible.utils.ipaddr('net')) | ansible.utils.usable_range)['usable_ips'][-3] }}"   #End of DHCP range, set as 2nd to last usable IP (ex: 10.250.0.253) in the subnet, leaving one useable IP at the end before the broadcast IP

@@ -4,7 +4,7 @@
   become: true
   vars_files:
     - ./vars/vars.yml
-  
+    - ./vars/dont_edit.yml
   pre_tasks:
     - name: Load package variables (dynamically)
       include_vars: "{{ item }}"
