@@ -15,7 +15,10 @@ On your target machine, it will deploy a dhcp server, a tftp server, a web serve
 ## Setup:
 1. Clone the repository onto your Ansible controller
 2. Copy your ISOs into the ISO folder
-3. Copy/rename vars-example.yml to vars.yml and set the variables appropriately
+3. Copy/rename vars-example.yml to vars.yml and set the variables
+   - default_iso_name should be the filename of whichever ISO you want iPXE to default to booting
+   - Under isos, set the file_name, for each iso in the ISO folder that you wish to use, the menu_descriptions as the description you want shown in the iPXE menu, and true or false for enabled.
+   - If you are using a secondary network interface for an dedicated PXE network, set USE_PXE_INTERFACE to true, and add the interface name, subnet, netmask, and dns server(s) in the variables that follow.
 4. Copy/rename inventory-example.yml to inventory.yml and set your host ip/hostname and the name of the user on the server with passwordless sudo access
 
 ## Run:
