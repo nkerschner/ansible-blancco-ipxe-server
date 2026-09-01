@@ -1,0 +1,45 @@
+---
+  - name: Install Samba
+    ansible.builtin.package:
+      name: "{{ SMB }}"
+
+  - name: Enable SMBD
+    ansible.builtin.systemd_service:
+      name: smbd
+      enabled: true
+      state: started
+  
+  - name: Enable NMBD
+    ansible.builtin.systemd_service:
+      name: nmbd
+      enabled: true
+      state: started
+
+  - name: Make Samba Root directory
+    ansible.builtin.file:
+      path: "{{ SAMBA_ROOT }}"
+      state: directory
+      mode: '0755'
+  
+  - name: Make Samba Images directory
+    ansible.builtin.file:
+      path: "{{ IMAGES_FOLDER }}"
+      state: directory
+      mode: '0777'
+
+  - name: Make Samba Drivers directory
+    ansible.builtin.file:
+      path: "{{ DRIVERS_FOLDER }}"
+      state: directory
+      mode: '0777'
+
+  - name: Configure Samba samba shares
+    ansible.builtin.template:
+      src: ./templates/smb.j2
+      dest: /etc/samba/smb.conf
+      owner: root
+      group: root
+      mode: '0644'
+    notify:
+      - Restart SMBD
+      - Restart NMBD

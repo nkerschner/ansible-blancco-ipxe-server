@@ -7,6 +7,7 @@ UNZIP: unzip
 NET_TOOLS: net-tools
 NFTABLES: nftables
 RSYNC: rsync
+SMB: samba
 
 TFTP_ROOT: /srv/tftp/
 WEB_ROOT: /var/www/html/

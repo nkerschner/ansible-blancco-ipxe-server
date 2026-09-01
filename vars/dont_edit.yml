@@ -16,3 +16,30 @@ SERVER_IP: "{{ GATEWAY_IP if USE_PXE_INTERFACE else ansible_facts['default_ipv4'
 # ISO Related Directories 
 IMAGES_CONTENT: "{{ WEB_ROOT }}Images_Content"
 ISO_IMAGES: "{{ WEB_ROOT }}ISO_Images"
+
+SAMBA_ROOT: "/srv/samba/"
+IMAGES_FOLDER: "{{ SAMBA_ROOT }}images"
+DRIVERS_FOLDER: "{{ SAMBA_ROOT }}drivers"
+
+samba_shares:
+  - name: images
+    comment: Images
+    path : "{{ IMAGES_FOLDER }}"
+    writeable: yes
+    browseable: yes
+    public: yes
+    read_only: no
+    guest_ok: yes
+    force_user: nobody
+    force_group: nogroup
+
+  - name: drivers
+    comment: Drivers
+    path : "{{ DRIVERS_FOLDER }}"
+    writeable: yes
+    browseable: yes
+    public: yes
+    read_only: no
+    guest_ok: yes
+    force_user: nobody
+    force_group: nogroup

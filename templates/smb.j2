@@ -1,0 +1,36 @@
+[global]
+    map to guest = bad user
+    max log size = 1000
+    log level = 3
+    security = user
+    unix extensions = no
+    directory mask = 0777
+    force create mode = 0777
+    force directory mode = 0777
+    strict locking = no
+    socket options = TCP_NODELAY SO_KEEPALIVE TCP_KEEPIDLE=30 TCP_KEEPCNT=3 TCP_KEEPINTVL=3
+
+    # Disable printer sharing (almost never needed on a file server)
+    load printers = no
+    printing = bsd
+    printcap name = /dev/null
+    disable spoolss = yes
+
+{% for share in samba_shares %}
+[{{ share.name }}]
+    comment = {{ share.comment }}
+    path = {{ share.path }}
+    browseable = {{ share.browseable }}
+    writeable = {{ share.writeable }}
+    public = {{ share.public }}
+    read only = {{ share.read_only }}
+    guest ok = {{ share.guest_ok }}
+{% if share.force_user is defined %}
+    force user = {{ share.force_user }}
+{% endif %}
+{% if share.force_group is defined %}
+    force group = {{ share.force_group }}
+{% endif %}
+
+{% endfor %}
+

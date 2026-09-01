@@ -20,6 +20,16 @@
       ansible.builtin.service:
         name: "{{ DHCPD }}"
         state: restarted
+    
+    - name: Restart SMBD
+      ansible.builtin.service:
+        name: smbd
+        state: restarted
+
+    - name: Restart NMBD
+      ansible.builtin.service:
+        name: NMBD
+        state: restarted
 
     - name: Restart nftables
       ansible.builtin.service:
@@ -52,6 +62,9 @@
     
     - name: Setup Apache server
       ansible.builtin.import_tasks: ./tasks/apache.yml
+
+    - name: Setup Samba server
+      ansible.builtin.import_tasks: ./tasks/smb.yml
 
     - name: Process ISOs and create iPXE menu
       ansible.builtin.import_tasks: ./tasks/iso_and_ipxe_menu.yml
