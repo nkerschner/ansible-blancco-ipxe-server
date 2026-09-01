@@ -21,7 +21,7 @@
   - name: Download Wimboot
     ansible.builtin.get_url:
       url: https://github.com/ipxe/wimboot/releases/latest/download/wimboot
-      dest: "{{WEB_ROOT}}"
+      dest: "{{WEB_ROOT}}/wimboot"
       mode: '0755'
   
   # run process_iso task for each iso listed and enabled in vars.yml
