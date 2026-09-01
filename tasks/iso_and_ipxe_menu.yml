@@ -17,6 +17,12 @@
       path: /media/ISO
       state: directory
       mode: '0755'
+
+  - name: Download Wimboot
+    ansible.builtin.get_url:
+      url: https://github.com/ipxe/wimboot/releases/latest/download/wimboot
+      dest: "{{WEB_ROOT}}"
+      mode: '0755'
   
   # run process_iso task for each iso listed and enabled in vars.yml
   - name: Process ISOs to enable PXE boot
