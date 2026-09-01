@@ -54,7 +54,7 @@ poweroff
 ###Menu
 
 # Define the path to the images here
-{% for iso in isos if iso.enabled %}
+{% for iso in isos if iso.enabled and iso.type == 'bde'  %}
 :{{ iso.file_name | ansible.builtin.splitext | first }}
 set imgfolder {{ iso.file_name | ansible.builtin.splitext | first }}
 set architecture x86_64
@@ -66,6 +66,18 @@ set config config.img
 #set config UI_config.img #Single BDE image and create several config.img, each having a different configuration (hardware tests on/off, local/remote erasure, ...)
 set bootparams cow_spacesize=2G libata.allow_tpm=1 memtest=01
 goto params
+
+{% endfor %}
+
+
+{% for iso in isos if iso.enabled and iso.type == 'bar' %}
+:{{ iso.file_name | ansible.builtin.splitext | first }}
+set imgfolder {{ iso.file_name | ansible.builtin.splitext | first }}
+set imgfolder ${productdir}/${versiondir}
+set bcd Boot/BCD
+set bootsdi Boot/boot.sdi
+set bootwim sources/boot.wim
+goto bootwinpe
 
 {% endfor %}
 
@@ -155,3 +167,24 @@ sleep 10
 imgargs ${vmlinuz} archisobasedir=arch archiso_http_srv=${server}/Images_Content/${imgfolder}/ ${ipconfig} ${addinitrd} ${bootparams}
 boot || goto failed
 goto start
+
+:bootwinpe
+echo Booting WinPE
+kernel http://${server}/Boot/wimboot			gui || goto failed
+initrd ${httpimgdir}/${imgfolder}/${bcd}	BCD || goto failed
+initrd ${httpimgdir}/${imgfolder}/${bootsdi}	boot.sdi || goto failed
+initrd ${httpimgdir}/${imgfolder}/${bootwim}	boot.wim || goto failed
+
+boot || goto failed
+goto start
+
+### Other ###
+:failed
+sleep 5
+
+console		# Clears the console
+echo There was an error during the booting...
+prompt --key s Press 's' to open the shell, or any other key to continue && echo Type 'help' to see the available commands && echo Type 'exit' to exit the shell && shell ||
+prompt --key r Press 'r' to restart the script, or any other key to exit && goto start ||
+
+exit 1		# Exits the script with an error
