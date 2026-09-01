@@ -73,7 +73,6 @@ goto params
 {% for iso in isos if iso.enabled and iso.type == 'bar' %}
 :{{ iso.file_name | ansible.builtin.splitext | first }}
 set imgfolder {{ iso.file_name | ansible.builtin.splitext | first }}
-set imgfolder ${productdir}/${versiondir}
 set bcd Boot/BCD
 set bootsdi Boot/boot.sdi
 set bootwim sources/boot.wim
@@ -170,10 +169,10 @@ goto start
 
 :bootwinpe
 echo Booting WinPE
-kernel http://${server}/Boot/wimboot			gui || goto failed
-initrd ${httpimgdir}/${imgfolder}/${bcd}	BCD || goto failed
-initrd ${httpimgdir}/${imgfolder}/${bootsdi}	boot.sdi || goto failed
-initrd ${httpimgdir}/${imgfolder}/${bootwim}	boot.wim || goto failed
+kernel http://${server}/wimboot			gui || goto failed
+initrd http://${server}/Images_Content/${imgfolder}/${bcd}	BCD || goto failed
+initrd http://${server}/Images_Content/${imgfolder}/${bootsdi}	boot.sdi || goto failed
+initrd http://${server}/Images_Content/${imgfolder}/${bootwim}	boot.wim || goto failed
 
 boot || goto failed
 goto start
