@@ -73,8 +73,8 @@ goto params
 {% for iso in isos if iso.enabled and iso.type == 'bar' %}
 :{{ iso.file_name | ansible.builtin.splitext | first }}
 set imgfolder {{ iso.file_name | ansible.builtin.splitext | first }}
-set bcd Boot/BCD
-set bootsdi Boot/boot.sdi
+set bcd boot/bcd
+set bootsdi boot/boot.sdi
 set bootwim sources/boot.wim
 goto bootwinpe
 
