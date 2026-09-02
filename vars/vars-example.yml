@@ -5,12 +5,12 @@ default_iso_name:  bde.iso  #default iso for ipxe menu
 isos:
   - file_name: bde.iso   #ISO file name in local folder
     menu_description: description of bde iso   #description of ISO that will appear in the ipxe menu
-    type: bde
+    type: bde # type is either bde or bar
     enabled: true
 
   - file_name: bar.iso
     menu_description: description of bar iso
-    type: bar
+    type: bar #type is either bde or bar
     enabled: false
 
 # pxe network info
